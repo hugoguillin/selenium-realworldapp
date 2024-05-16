@@ -13,7 +13,6 @@ public class BrowserScope extends SimpleThreadScope {
     public Object get(String name, ObjectFactory<?> objectFactory) {
         Object webDriver = super.get(name, objectFactory);
         SessionId sessionId = ((RemoteWebDriver)webDriver).getSessionId();
-        System.out.println("Session ID: " + sessionId);
         if (Objects.isNull(sessionId)){
             super.remove(name);
             webDriver = super.get(name, objectFactory);
