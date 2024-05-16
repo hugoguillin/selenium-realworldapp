@@ -34,7 +34,7 @@ public class BaseTest {
     @Value("${api.url}")
     private String apiUrl;
     @Autowired
-    private WebDriver driver;
+    protected WebDriver driver;
     @Autowired
     protected ApplicationContext ctx;
     @Autowired
