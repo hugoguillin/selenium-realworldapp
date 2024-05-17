@@ -85,4 +85,22 @@ public class ArticleDetailTests extends BaseTest {
         articleDetailPage.assertCommentIsVisible(message);
         articleDetailPage.assertCommentHasTestUserUsername(message);
     }
+
+    @Test
+    @Tag("sanity")
+    @Tag("comments")
+    @DisplayName("Should delete a comment from an article")
+    public void deleteComment() {
+        // Arrange
+        int articleIndex = 0;
+        String message = Faker.instance().chuckNorris().fact();
+        articlesApi.addCommentToArticle(articleIndex, message);
+        articleDetailPage.visit(articleIndex);
+
+        // Act
+        articleDetailPage.deleteComment(message);
+
+        // Assert
+        articleDetailPage.assertCommentIsNotVisible(message);
+    }
 }

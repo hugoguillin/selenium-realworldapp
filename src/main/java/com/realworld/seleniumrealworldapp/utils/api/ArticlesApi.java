@@ -23,6 +23,18 @@ public class ArticlesApi extends ApiBase{
                 .asString();
     }
 
+    public void addCommentToArticle(int articleIndex, String message) {
+        String slug = JsonPath.parse(getArticles(10)).read("$.articles[" + articleIndex + "].slug");
+        given()
+                .header("Authorization", getToken())
+                .contentType("application/json")
+                .body("{\"comment\": {\"body\": \"" + message + "\"}}")
+                .when()
+                .post("/articles/" + slug + "/comments")
+                .then()
+                .statusCode(201);
+    }
+
     public void deleteArticleComments(int articleIndex) {
         String slug = JsonPath.parse(getArticles(10)).read("$.articles[" + articleIndex + "].slug");
         List<Map<String, Object>> testUserComments = JsonPath.parse(getArticleComments(slug)).read("$.comments[?(@.author.username == '" + username + "')]");

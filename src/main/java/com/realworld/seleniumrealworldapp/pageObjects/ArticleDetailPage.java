@@ -5,6 +5,7 @@ import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import static org.assertj.core.api.Assertions.*;
@@ -45,4 +46,22 @@ public class ArticleDetailPage extends BasePage{
         assertThat(el.findElement(By.cssSelector("[data-testid='author-username']")).getText()).contains(username);
     }
 
+    public void deleteComment(String message) {
+        var commentCard = getElementsByTestId("comment-card").stream()
+                .filter(card -> card.getText().contains(message))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Comment card not found"));
+        commentCard.findElement(By.cssSelector("[data-testid='delete-comment']")).click();
+        wait.until(ExpectedConditions.alertIsPresent()).accept();
+    }
+
+    public void assertCommentIsNotVisible(String message) {
+        wait.until(d -> {
+            try {
+                return !this.getElementByText(message).isDisplayed();
+            } catch (Exception e) {
+                return true;
+            }
+        });
+    }
 }
