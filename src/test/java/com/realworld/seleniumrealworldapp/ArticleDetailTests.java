@@ -1,9 +1,11 @@
 package com.realworld.seleniumrealworldapp;
 
+import com.github.javafaker.Faker;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.pageObjects.ArticleDetailPage;
 import com.realworld.seleniumrealworldapp.pageObjects.GlobalFeedPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorButton;
+import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
 import com.realworld.seleniumrealworldapp.utils.api.FavoritesApi;
 import org.junit.jupiter.api.DisplayName;
@@ -25,6 +27,8 @@ public class ArticleDetailTests extends BaseTest {
     private AuthorApi authorApi;
     @Autowired
     private FollowAuthorButton followAuthorButton;
+    @Autowired
+    private ArticlesApi articlesApi;
 
     @Test
     @Tag("sanity")
@@ -70,7 +74,15 @@ public class ArticleDetailTests extends BaseTest {
     public void addComment() {
         // Arrange
         int articleIndex = 0;
+        String message = Faker.instance().chuckNorris().fact();
+        articlesApi.deleteArticleComments(articleIndex);
         articleDetailPage.visit(articleIndex);
 
+        // Act
+        articleDetailPage.sendComment(message);
+
+        // Assert
+        articleDetailPage.assertCommentIsVisible(message);
+        articleDetailPage.assertCommentHasTestUserUsername(message);
     }
 }

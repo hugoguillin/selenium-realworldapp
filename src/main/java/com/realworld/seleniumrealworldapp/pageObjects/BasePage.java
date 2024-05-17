@@ -34,7 +34,7 @@ public class BasePage {
      * @return The element found
      */
     public WebElement getElementByText(String text) {
-        var elementLocator = By.xpath("//*[text()='" + text + "']");
+        var elementLocator = By.xpath("//*[text()=\"" + text + "\"]");
         wait.until(d -> driver.findElement(elementLocator).isDisplayed());
         return driver.findElement(elementLocator);
     }
