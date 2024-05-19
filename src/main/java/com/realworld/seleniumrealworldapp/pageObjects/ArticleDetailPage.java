@@ -24,6 +24,10 @@ public class ArticleDetailPage extends BasePage{
         driver.get(baseUrl + "/article/" + slug);
     }
 
+    public void goToArticle(String slug) {
+        driver.get(baseUrl + "/article/" + slug);
+    }
+
     public void giveLikeToAnArticle(int articleIndex) {
         wait.until(driver -> this.getElementsByTestId("fav-button").get(articleIndex).isDisplayed());
         this.getElementsByTestId("fav-button").get(articleIndex).click();
@@ -63,5 +67,20 @@ public class ArticleDetailPage extends BasePage{
                 return true;
             }
         });
+    }
+
+    public void deleteArticle() {
+        this.getByTestId("delete-article").click();
+        wait.until(ExpectedConditions.alertIsPresent()).accept();
+    }
+
+    public void assertAppNavigatesToHomePageAfterArticleDeletion() {
+        wait.until(ExpectedConditions.urlToBe(baseUrl + "/"));
+    }
+
+    public void assertThatNavigatingToDeletedArticleReturns404(String slug) {
+        driver.get(baseUrl + "/article/" + slug);
+        assertThat(getElementByText("404 Not Found").isDisplayed()).isTrue();
+        assertThat(driver.findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
     }
 }

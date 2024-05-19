@@ -2,6 +2,7 @@ package com.realworld.seleniumrealworldapp.utils.api;
 
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.ApiService;
+import io.restassured.http.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
@@ -20,6 +21,16 @@ public class ArticlesApi extends ApiBase{
                 .param("limit", limit)
                 .when()
                 .get("/articles")
+                .asString();
+    }
+
+    public String createNewArticle(Map<String, Object> newArticle) {
+        return given()
+                .header("Authorization", getToken())
+                .contentType(ContentType.JSON)
+                .body(newArticle)
+                .when()
+                .post("/articles")
                 .asString();
     }
 

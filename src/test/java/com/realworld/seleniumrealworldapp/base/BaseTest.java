@@ -30,7 +30,7 @@ public class BaseTest {
     @Value("${browser}")
     private String browser;
     @Value("${base.url}")
-    private String baseUrl;
+    protected String baseUrl;
     @Value("${api.url}")
     private String apiUrl;
     @Autowired

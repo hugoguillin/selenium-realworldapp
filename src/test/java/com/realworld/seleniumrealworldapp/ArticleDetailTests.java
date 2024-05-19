@@ -1,6 +1,7 @@
 package com.realworld.seleniumrealworldapp;
 
 import com.github.javafaker.Faker;
+import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.pageObjects.ArticleDetailPage;
 import com.realworld.seleniumrealworldapp.pageObjects.GlobalFeedPage;
@@ -8,11 +9,13 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorBut
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
 import com.realworld.seleniumrealworldapp.utils.api.FavoritesApi;
+import com.realworld.seleniumrealworldapp.utils.common.Utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.assertj.core.api.Assertions.*;
 
 @SpringBootTest
@@ -102,5 +105,22 @@ public class ArticleDetailTests extends BaseTest {
 
         // Assert
         articleDetailPage.assertCommentIsNotVisible(message);
+    }
+
+    @Test
+    @Tag("sanity")
+    @DisplayName("Should delete an article")
+    public void deleteArticle() {
+        // Arrange
+        var newArticle = Utils.generateNewArticleData(true);
+        String slug = JsonPath.parse(articlesApi.createNewArticle(newArticle)).read("$.article.slug");
+        articleDetailPage.goToArticle(slug);
+
+        // Act
+        articleDetailPage.deleteArticle();
+
+        // Assert
+        articleDetailPage.assertAppNavigatesToHomePageAfterArticleDeletion();
+        articleDetailPage.assertThatNavigatingToDeletedArticleReturns404(slug);
     }
 }
