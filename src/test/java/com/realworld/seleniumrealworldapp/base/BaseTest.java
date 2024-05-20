@@ -1,6 +1,9 @@
 package com.realworld.seleniumrealworldapp.base;
 
-import kong.unirest.Unirest;
+import com.jayway.jsonpath.JsonPath;
+import com.jayway.jsonpath.ReadContext;
+import com.realworld.seleniumrealworldapp.utils.api.ApiBase;
+import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
@@ -27,17 +30,19 @@ public class BaseTest {
     @Value("${browser}")
     private String browser;
     @Value("${base.url}")
-    private String baseUrl;
+    protected String baseUrl;
     @Value("${api.url}")
     private String apiUrl;
     @Autowired
-    private WebDriver driver;
+    protected WebDriver driver;
     @Autowired
     protected ApplicationContext ctx;
+    @Autowired
+    private ApiBase apiBase;
 
     @BeforeAll
     public void setUpSuite() {
-        Unirest.config().verifySsl(false);
+        RestAssured.baseURI = apiUrl;
         storeAuthData();
     }
     @BeforeEach
@@ -67,16 +72,12 @@ public class BaseTest {
      * Get user auth data from the API and store it in a file with the same format as the local storage
      */
     private void storeAuthData() {
-        final String userEmail = "cypress@realworld.com";
-        final String userPassword = "cypress@realworld.com";
         File authFile = new File("auth.json");
-        var res = Unirest.post(apiUrl + "/users/login")
-                .header("Content-Type", "application/json")
-                .body("{\"user\":{\"email\":\""+ userEmail +"\",\"password\":\""+ userPassword +"\"}}")
-                .asJson();
-        var token = res.getBody().getObject().getJSONObject("user").getString("token");
-        var email = res.getBody().getObject().getJSONObject("user").getString("email");
-        var username = res.getBody().getObject().getJSONObject("user").getString("username");
+        var res = apiBase.getLoggedInUserData();
+        ReadContext ctx = JsonPath.parse(res);
+        String token = ctx.read("$.user.token");
+        String email = ctx.read("$.user.email");
+        String username = ctx.read("$.user.username");
         var value = "{\"headers\":{\"Authorization\":\"Token " + token + "\"},\"isAuth\":true,\"loggedUser\":{\"email\":\"" + email + "\",\"username\":\""+ username +"\",\"bio\":null,\"image\":null,\"token\":\""+ token +"\"}}";
         try (FileWriter fileWriter = new FileWriter(authFile)) {
             fileWriter.write(value);

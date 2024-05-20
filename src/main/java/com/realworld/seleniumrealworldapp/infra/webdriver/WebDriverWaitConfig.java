@@ -11,7 +11,7 @@ import java.time.Duration;
 
 @Configuration
 public class WebDriverWaitConfig {
-    @Value("${timeout:15}")
+    @Value("${timeout:7}")
     private int timeout;
 
     @Bean

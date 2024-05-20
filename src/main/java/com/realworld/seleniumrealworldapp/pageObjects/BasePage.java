@@ -34,9 +34,11 @@ public class BasePage {
      * @return The element found
      */
     public WebElement getElementByText(String text) {
-        var elementLocator = By.xpath("//*[text()='" + text + "']");
-        wait.until(d -> driver.findElement(elementLocator).isDisplayed());
-        return driver.findElement(elementLocator);
+        var elementLocator = By.xpath("//*[text()=\"" + text + "\"]");
+        return wait.until(d -> {
+            WebElement el = driver.findElement(elementLocator);
+            return el.isDisplayed() ? el : null;
+        });
     }
 
     /**
@@ -46,8 +48,10 @@ public class BasePage {
      */
     public WebElement getByTestId(String testId) {
         var elementLocator = By.cssSelector("[data-testid='" + testId + "']");
-        wait.until(d -> driver.findElement(elementLocator)).isDisplayed();
-        return driver.findElement(elementLocator);
+        return wait.until(d -> {
+            WebElement el = driver.findElement(elementLocator);
+            return el.isDisplayed() ? el : null;
+        });
     }
 
     /**
