@@ -21,4 +21,14 @@ public class AuthorApi extends ApiBase{
                 when().
                 delete("/profiles/" + authorNameEncoded + "/follow");
     }
+
+    public String getAuthorArticles(String authorName) {
+        return given()
+                .param("author", authorName)
+                .param("limit", 10)
+                .header("Authorization", getToken())
+                .when()
+                .get("/articles")
+                .asString();
+    }
 }
