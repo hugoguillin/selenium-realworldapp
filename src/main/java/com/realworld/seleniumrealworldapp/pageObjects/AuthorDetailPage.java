@@ -22,9 +22,12 @@ public class AuthorDetailPage extends BasePage {
     @Value("${base.url}")
     private String baseUrl;
 
-    public String visit() {
-        String randomIndex = String.valueOf((int) (Math.random() * 10));
-        String authorName = JsonPath.read(articlesApi.getArticles(10), "$.articles["+randomIndex+"].author.username");
+    /**
+     * Visits an author's profile page
+     * @return authorName
+     */
+    public String visit(int articleIndex) {
+        String authorName = JsonPath.read(articlesApi.getArticles(10), "$.articles["+articleIndex+"].author.username");
         driver.get(baseUrl + "/profile/" + authorName);
         wait.until(driver -> getElementByText("My Articles").getAttribute("class").contains("active"));
         return authorName;
