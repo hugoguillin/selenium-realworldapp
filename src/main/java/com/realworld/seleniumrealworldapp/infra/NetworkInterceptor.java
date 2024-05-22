@@ -73,7 +73,7 @@ public class NetworkInterceptor {
         return bodyResponse.getBody();
     }
 
-    public void markRequestAsCompleted() {
+    private void markRequestAsCompleted() {
         latch.countDown();
     }
 
