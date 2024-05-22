@@ -28,11 +28,6 @@ public class ArticleDetailPage extends BasePage{
         driver.get(baseUrl + "/article/" + slug);
     }
 
-    public void giveLikeToAnArticle(int articleIndex) {
-        wait.until(driver -> this.getElementsByTestId("fav-button").get(articleIndex).isDisplayed());
-        this.getElementsByTestId("fav-button").get(articleIndex).click();
-    }
-
     public void sendComment(String message) {
         this.getByTestId("comment-textarea").sendKeys(message);
         this.getByTestId("post-comment").click();

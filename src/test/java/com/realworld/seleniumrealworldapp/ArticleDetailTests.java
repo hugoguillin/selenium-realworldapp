@@ -4,7 +4,7 @@ import com.github.javafaker.Faker;
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.pageObjects.ArticleDetailPage;
-import com.realworld.seleniumrealworldapp.pageObjects.GlobalFeedPage;
+import com.realworld.seleniumrealworldapp.pageObjects.components.FavoritesPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorButton;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
@@ -23,13 +23,13 @@ public class ArticleDetailTests extends BaseTest {
     @Autowired
     private FavoritesApi favoritesApi;
     @Autowired
-    private GlobalFeedPage globalFeedPage;
-    @Autowired
     private ArticleDetailPage articleDetailPage;
     @Autowired
     private AuthorApi authorApi;
     @Autowired
     private FollowAuthorButton followAuthorButton;
+    @Autowired
+    private FavoritesPage favoritesPage;
     @Autowired
     private ArticlesApi articlesApi;
 
@@ -42,13 +42,13 @@ public class ArticleDetailTests extends BaseTest {
         int articleIndex = 0;
         favoritesApi.unfavoriteArticle(articleIndex);
         articleDetailPage.visit(articleIndex);
-        var likesBefore = globalFeedPage.getAmountOfLikes(articleIndex);
+        var likesBefore = favoritesPage.getAmountOfLikes(articleIndex);
 
         // Act
-        articleDetailPage.giveLikeToAnArticle(articleIndex);
+        favoritesPage.likeAnArticle(articleIndex);
 
         // Assert
-        var likesAfter = globalFeedPage.getAmountOfLikes(articleIndex);
+        var likesAfter = favoritesPage.getAmountOfLikes(articleIndex);
         assertThat(likesAfter).isEqualTo(likesBefore + 1);
     }
 
