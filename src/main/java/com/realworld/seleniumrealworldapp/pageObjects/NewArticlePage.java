@@ -1,10 +1,10 @@
 package com.realworld.seleniumrealworldapp.pageObjects;
 
 import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
+import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.Map;
 
 @PageObject
 public class NewArticlePage extends BasePage {
@@ -15,16 +15,16 @@ public class NewArticlePage extends BasePage {
         driver.get(baseUrl + "/editor");
     }
 
-    public void createArticle(Map<String, Object> articleData) {
-        this.getByTestId("title").sendKeys(articleData.get("title").toString());
-        this.getByTestId("description").sendKeys(articleData.get("description").toString());
-        this.getByTestId("body").sendKeys(articleData.get("body").toString());
-        List<String> tags = (List<String>) articleData.get("tagList");
+    public void createArticle(NewArticle articleData) {
+        this.getByTestId("title").sendKeys(articleData.getTitle());
+        this.getByTestId("description").sendKeys(articleData.getDescription());
+        this.getByTestId("body").sendKeys(articleData.getBody());
+        List<String> tags = articleData.getTagList();
         tags.forEach(tag -> this.getByTestId("tags").sendKeys(tag + " "));
     }
 
-    public void editArticle(Map<String, Object> articleData) {
-        wait.until(d -> this.getElementByText("Update Article").isDisplayed());
+    public void editArticle(NewArticle articleData) {
+        wait.until(d -> this.getElementByText("Update NewArticle").isDisplayed());
         createArticle(articleData);
     }
 

@@ -2,6 +2,7 @@ package com.realworld.seleniumrealworldapp.utils.api;
 
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.ApiService;
+import com.realworld.seleniumrealworldapp.utils.entities.ArticleWrapper;
 import io.restassured.http.ContentType;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -24,7 +25,7 @@ public class ArticlesApi extends ApiBase{
                 .asString();
     }
 
-    public String createNewArticle(Map<String, Object> newArticle) {
+    public String createNewArticle(ArticleWrapper newArticle) {
         return given()
                 .header("Authorization", getToken())
                 .contentType(ContentType.JSON)

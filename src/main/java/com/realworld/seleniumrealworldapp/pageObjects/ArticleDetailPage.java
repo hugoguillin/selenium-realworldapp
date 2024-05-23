@@ -3,6 +3,7 @@ package com.realworld.seleniumrealworldapp.pageObjects;
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
+import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -10,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -83,12 +83,12 @@ public class ArticleDetailPage extends BasePage{
         assertThat(driver.findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
     }
 
-    public void assertThatArticleDisplaysExpectedData(Map<String, Object> articleData) {
-        List<String> expectedTags = (List<String>) articleData.get("tagList");
+    public void assertThatArticleDisplaysExpectedData(NewArticle articleData) {
+        List<String> expectedTags = articleData.getTagList();
         List<String> actualTags = getElementsByTestId("article-tag").stream()
                 .map(WebElement::getText)
                 .toList();
-        assertThat(driver.findElement(By.tagName("p")).getText()).isEqualTo(articleData.get("body").toString());
+        assertThat(driver.findElement(By.tagName("p")).getText()).isEqualTo(articleData.getBody());
         assertThat(expectedTags).containsExactlyInAnyOrderElementsOf(actualTags);
     }
 }

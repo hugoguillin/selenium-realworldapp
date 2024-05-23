@@ -1,11 +1,11 @@
 package com.realworld.seleniumrealworldapp;
 
-import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.infra.NetworkInterceptor;
 import com.realworld.seleniumrealworldapp.pageObjects.ArticleDetailPage;
 import com.realworld.seleniumrealworldapp.pageObjects.NewArticlePage;
-import com.realworld.seleniumrealworldapp.utils.common.Utils;
+import com.realworld.seleniumrealworldapp.utils.Utils;
+import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
@@ -13,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.util.Map;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -25,12 +24,12 @@ public class NewArticleTests extends BaseTest {
     @Autowired
     private NetworkInterceptor networkInterceptor;
 
-    private Map<String, Object> newArticle;
+    private NewArticle newArticle;
 
     @BeforeEach
     public void setUp() {
         super.setUp();
-        newArticle = JsonPath.parse(Utils.generateNewArticleData(true)).read("$.article");
+        newArticle = Utils.generateNewArticleData(true).getArticle();
     }
     @Test
     @Tag("sanity")
@@ -38,8 +37,7 @@ public class NewArticleTests extends BaseTest {
     @DisplayName("Should create a new article")
     public void testCreateNewArticle() {
         // Arrange
-        String articleSlug = newArticle.get("title")
-                .toString()
+        String articleSlug = newArticle.getTitle()
                 .toLowerCase()
                 .replaceAll("[.\\s]", "-");
         newArticlePage.visit();
