@@ -8,6 +8,10 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.List;
+import java.util.Map;
+
 import static org.assertj.core.api.Assertions.*;
 
 @PageObject
@@ -77,5 +81,14 @@ public class ArticleDetailPage extends BasePage{
         driver.get(baseUrl + "/article/" + slug);
         assertThat(getElementByText("404 Not Found").isDisplayed()).isTrue();
         assertThat(driver.findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
+    }
+
+    public void assertThatArticleDisplaysExpectedData(Map<String, Object> articleData) {
+        List<String> expectedTags = (List<String>) articleData.get("tagList");
+        List<String> actualTags = getElementsByTestId("article-tag").stream()
+                .map(WebElement::getText)
+                .toList();
+        assertThat(driver.findElement(By.tagName("p")).getText()).isEqualTo(articleData.get("body").toString());
+        assertThat(expectedTags).containsExactlyInAnyOrderElementsOf(actualTags);
     }
 }

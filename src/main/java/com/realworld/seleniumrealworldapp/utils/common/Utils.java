@@ -10,7 +10,7 @@ import java.util.Map;
 public class Utils {
     public static Map<String, Object> generateNewArticleData(boolean includeTags) {
         var faker = new Faker();
-        var title = faker.book().title();
+        var title = faker.lorem().sentence();
         var description = faker.lorem().sentence();
         var body = faker.lorem().paragraph();
         var tagList = includeTags ? Arrays.asList(faker.name().firstName(), faker.name().firstName()) : Collections.emptyList();

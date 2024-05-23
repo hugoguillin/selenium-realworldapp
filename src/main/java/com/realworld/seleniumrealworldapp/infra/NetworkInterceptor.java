@@ -33,21 +33,12 @@ public class NetworkInterceptor {
      * @param urlRegex The regex to match the URL of the request to intercept. For example: <code>".*articles/" + variable</code>
      * @param requestMethod The method of the request to intercept
      */
-    public void interceptRequest(String urlRegex, String requestMethod) {
-        devTools.addListener(Network.requestWillBeSent(), request -> {
-            Request req = request.getRequest();
-            if (req.getUrl().matches(urlRegex) && req.getMethod().equals(requestMethod)) {
-                System.out.println("Intercepted request: " + req.getUrl() + " with method: " + req.getMethod());
-                markRequestAsCompleted();
-            }
-        });
-    }
-
-    public void interceptResponse(String urlRegex) {
+    public void interceptResponse(String urlRegex, String requestMethod) {
+        final Request[] req = new Request[1];
+        devTools.addListener(Network.requestWillBeSent(), request -> req[0] = request.getRequest());
         devTools.addListener(Network.responseReceived(), response -> {
             Response res = response.getResponse();
-            if (res.getUrl().matches(urlRegex)) {
-                assert res.getStatus() == 200;
+            if (res.getUrl().matches(urlRegex) && req[0].getMethod().equals(requestMethod)) {
                 this.interceptedRequestId = response.getRequestId();
                 this.interceptedResponse = res;
                 System.out.println("Intercepted response: " + res.getUrl() + " with status " + res.getStatus());

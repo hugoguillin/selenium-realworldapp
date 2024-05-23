@@ -81,7 +81,7 @@ public class AuthorDetailTests extends BaseTest {
         var authorName = authorDetailPage.visit(0);
 
         // Act
-        networkInterceptor.interceptResponse(".*/profiles/" + authorName + "/follow");
+        networkInterceptor.interceptResponse(".*/profiles/" + authorName + "/follow", "POST");
         followAuthorButton.clickButton();
         networkInterceptor.awaitRequestCompletion();
         boolean isFollowing =  JsonPath.parse(networkInterceptor.getResponseBody()).read("$.profile.following");
