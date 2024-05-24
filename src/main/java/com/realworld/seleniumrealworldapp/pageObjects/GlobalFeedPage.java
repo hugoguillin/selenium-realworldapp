@@ -10,7 +10,7 @@ public class GlobalFeedPage extends BasePage{
     private NetworkInterceptor networkInterceptor;
 
     public void goToGlobalFeed() {
-        networkInterceptor.interceptResponse(".*/api/articles\\?.*");
+        networkInterceptor.interceptResponse(".*/api/articles\\?.*", "GET");
         getByTestId("global-feed").click();
         networkInterceptor.awaitRequestCompletion();
     }

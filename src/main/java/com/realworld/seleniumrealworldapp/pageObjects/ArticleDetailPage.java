@@ -3,11 +3,15 @@ package com.realworld.seleniumrealworldapp.pageObjects;
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
+import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.*;
 
 @PageObject
@@ -26,6 +30,10 @@ public class ArticleDetailPage extends BasePage{
 
     public void goToArticle(String slug) {
         driver.get(baseUrl + "/article/" + slug);
+    }
+
+    public String getArticleBodyText() {
+        return driver.findElement(By.tagName("p")).getText();
     }
 
     public void sendComment(String message) {
@@ -64,6 +72,11 @@ public class ArticleDetailPage extends BasePage{
         });
     }
 
+    public void goToEditArticle() {
+        this.getByTestId("edit-article").click();
+        wait.until(ExpectedConditions.urlContains("/editor"));
+    }
+
     public void deleteArticle() {
         this.getByTestId("delete-article").click();
         wait.until(ExpectedConditions.alertIsPresent()).accept();
@@ -77,5 +90,14 @@ public class ArticleDetailPage extends BasePage{
         driver.get(baseUrl + "/article/" + slug);
         assertThat(getElementByText("404 Not Found").isDisplayed()).isTrue();
         assertThat(driver.findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
+    }
+
+    public void assertThatArticleDisplaysExpectedData(NewArticle articleData) {
+        List<String> expectedTags = articleData.getTagList();
+        List<String> actualTags = getElementsByTestId("article-tag").stream()
+                .map(WebElement::getText)
+                .toList();
+        assertThat(getArticleBodyText()).isEqualTo(articleData.getBody());
+        assertThat(expectedTags).containsExactlyInAnyOrderElementsOf(actualTags);
     }
 }

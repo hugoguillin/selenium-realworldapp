@@ -9,7 +9,7 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorBut
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
 import com.realworld.seleniumrealworldapp.utils.api.FavoritesApi;
-import com.realworld.seleniumrealworldapp.utils.common.Utils;
+import com.realworld.seleniumrealworldapp.utils.Utils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
