@@ -32,6 +32,10 @@ public class ArticleDetailPage extends BasePage{
         driver.get(baseUrl + "/article/" + slug);
     }
 
+    public String getArticleBodyText() {
+        return driver.findElement(By.tagName("p")).getText();
+    }
+
     public void sendComment(String message) {
         this.getByTestId("comment-textarea").sendKeys(message);
         this.getByTestId("post-comment").click();
@@ -68,6 +72,11 @@ public class ArticleDetailPage extends BasePage{
         });
     }
 
+    public void goToEditArticle() {
+        this.getByTestId("edit-article").click();
+        wait.until(ExpectedConditions.urlContains("/editor"));
+    }
+
     public void deleteArticle() {
         this.getByTestId("delete-article").click();
         wait.until(ExpectedConditions.alertIsPresent()).accept();
@@ -88,7 +97,7 @@ public class ArticleDetailPage extends BasePage{
         List<String> actualTags = getElementsByTestId("article-tag").stream()
                 .map(WebElement::getText)
                 .toList();
-        assertThat(driver.findElement(By.tagName("p")).getText()).isEqualTo(articleData.getBody());
+        assertThat(getArticleBodyText()).isEqualTo(articleData.getBody());
         assertThat(expectedTags).containsExactlyInAnyOrderElementsOf(actualTags);
     }
 }

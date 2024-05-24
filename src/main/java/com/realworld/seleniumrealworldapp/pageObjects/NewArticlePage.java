@@ -21,14 +21,12 @@ public class NewArticlePage extends BasePage {
         this.getByTestId("body").sendKeys(articleData.getBody());
         List<String> tags = articleData.getTagList();
         tags.forEach(tag -> this.getByTestId("tags").sendKeys(tag + " "));
+
+        this.getByTestId("submit-button").click();
     }
 
     public void editArticle(NewArticle articleData) {
-        wait.until(d -> this.getElementByText("Update NewArticle").isDisplayed());
+        wait.until(d -> this.getElementByText("Update Article").isDisplayed());
         createArticle(articleData);
-    }
-
-    public void publishArticle() {
-        this.getByTestId("submit-button").click();
     }
 }
