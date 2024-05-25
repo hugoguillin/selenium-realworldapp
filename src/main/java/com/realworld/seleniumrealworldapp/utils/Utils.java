@@ -3,6 +3,7 @@ package com.realworld.seleniumrealworldapp.utils;
 import com.github.javafaker.Faker;
 import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
 import com.realworld.seleniumrealworldapp.utils.entities.ArticleWrapper;
+import com.realworld.seleniumrealworldapp.utils.entities.NewUser;
 
 import java.util.*;
 
@@ -19,5 +20,14 @@ public class Utils {
         NewArticle article = new NewArticle(title, description, body, tagList);
 
         return new ArticleWrapper(article);
+    }
+
+    public static NewUser generateNewUserData() {
+        var faker = new Faker();
+        var username = faker.name().username();
+        var email = faker.internet().emailAddress();
+        var password = faker.internet().password();
+
+        return new NewUser(username, email, password);
     }
 }
