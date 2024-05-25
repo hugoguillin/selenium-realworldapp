@@ -3,8 +3,8 @@ package com.realworld.seleniumrealworldapp.infra.webdriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -24,9 +24,9 @@ public class WebDriverConfig {
 
     @Bean
     @Scope(scopeName = "browserscope")
-    @ConditionalOnProperty(name = "browser", havingValue = "firefox")
-    public WebDriver firefoxDriver(){
-        return new FirefoxDriver();
+    @ConditionalOnProperty(name = "browser", havingValue = "edge")
+    public WebDriver edgeDriver(){
+        return new EdgeDriver();
     }
 
     @Bean
@@ -40,10 +40,10 @@ public class WebDriverConfig {
 
     @Bean
     @Scope(scopeName = "browserscope")
-    @ConditionalOnProperty(name = "browser", havingValue = "firefoxHeadless")
-    public WebDriver firefoxDriverHeadless(){
-        FirefoxOptions options = new FirefoxOptions();
+    @ConditionalOnProperty(name = "browser", havingValue = "edgeHeadless")
+    public WebDriver edgeDriverHeadless(){
+        EdgeOptions options = new EdgeOptions();
         options.addArguments("--headless");
-        return new FirefoxDriver(options);
+        return new EdgeDriver(options);
     }
 }

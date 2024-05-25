@@ -14,7 +14,6 @@ import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 
 import java.io.File;
@@ -27,8 +26,6 @@ import java.io.IOException;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ComponentScan("com.realworld.seleniumrealworldapp")
 public class BaseTest {
-    @Value("${browser}")
-    private String browser;
     @Value("${base.url}")
     protected String baseUrl;
     @Value("${api.url}")
@@ -36,20 +33,22 @@ public class BaseTest {
     @Autowired
     protected WebDriver driver;
     @Autowired
-    protected ApplicationContext ctx;
-    @Autowired
     private ApiBase apiBase;
+    private static boolean started = false;
 
     @BeforeAll
     public void setUpSuite() {
-        RestAssured.baseURI = apiUrl;
-        storeAuthData();
+        if (!started) {
+            RestAssured.baseURI = apiUrl;
+            storeAuthData();
+            started = true;
+        }
     }
     @BeforeEach
     public void setUp() {
         var key = "loggedUser";
         var value = getAuthData();
-        initDriver();
+        setWindowSize();
         driver.get(baseUrl);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         // Set auth data to local storage, so the user is logged in when the page is loaded
@@ -57,13 +56,7 @@ public class BaseTest {
         driver.navigate().refresh();
     }
 
-    private void initDriver(){
-        switch (browser) {
-            case "firefox" -> driver = ctx.getBean("firefoxDriver", WebDriver.class);
-            case "firefoxHeadless" -> driver = ctx.getBean("firefoxDriverHeadless", WebDriver.class);
-            case "chrome" -> driver = ctx.getBean("chromeDriver", WebDriver.class);
-            case "chromeHeadless" -> driver = ctx.getBean("chromeDriverHeadless", WebDriver.class);
-        }
+    private void setWindowSize(){
         Dimension dimension = new Dimension(1920, 1080);
         driver.manage().window().setSize(dimension);
     }
