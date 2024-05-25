@@ -12,6 +12,6 @@ public class GlobalFeedPage extends BasePage{
     public void goToGlobalFeed() {
         networkInterceptor.interceptResponse(".*/api/articles\\?.*", "GET");
         getByTestId("global-feed").click();
-        networkInterceptor.awaitRequestCompletion();
+        networkInterceptor.waitForResponse();
     }
 }

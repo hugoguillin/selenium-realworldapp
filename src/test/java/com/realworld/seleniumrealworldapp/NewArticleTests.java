@@ -49,7 +49,7 @@ public class NewArticleTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/articles", "POST");
         newArticlePage.createArticle(newArticle.getArticle());
-        networkInterceptor.awaitRequestCompletion();
+        networkInterceptor.waitForResponse();
 
         // Assert
         assertThat(driver.getCurrentUrl()).contains(articleSlug);
@@ -76,7 +76,7 @@ public class NewArticleTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/articles/"+ newArticleSlug + updatedArticleSlug, "GET");
         newArticlePage.editArticle(updatedArticle);
-        networkInterceptor.awaitRequestCompletion();
+        networkInterceptor.waitForResponse();
 
         // Assert
         assertThat(driver.getCurrentUrl()).contains(updatedArticleSlug);

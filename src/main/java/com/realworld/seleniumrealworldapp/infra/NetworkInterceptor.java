@@ -19,7 +19,6 @@ public class NetworkInterceptor {
     @Autowired
     private DevTools devTools;
     private final CountDownLatch latch;
-    private Response interceptedResponse;
     private RequestId interceptedRequestId;
 
     @Autowired
@@ -29,7 +28,7 @@ public class NetworkInterceptor {
 
     /**
      * Intercepts a request with a specific URL and method, so that the test can wait for it to complete.
-     * Be aware that you must call {@link NetworkInterceptor#awaitRequestCompletion()} after the request is triggered.
+     * Be aware that you must call {@link NetworkInterceptor#waitForResponse()} after the request is triggered.
      * @param urlRegex The regex to match the URL of the request to intercept. For example: <code>".*articles/" + variable</code>
      * @param requestMethod The method of the request to intercept
      */
@@ -40,26 +39,29 @@ public class NetworkInterceptor {
             Response res = response.getResponse();
             if (res.getUrl().matches(urlRegex) && req[0].getMethod().equals(requestMethod)) {
                 this.interceptedRequestId = response.getRequestId();
-                this.interceptedResponse = res;
                 System.out.println("Intercepted response: " + res.getUrl() + " with status " + res.getStatus());
                 markRequestAsCompleted();
             }
         });
     }
 
-    public Response awaitRequestCompletion() {
+    /**
+     * Waits for the intercepted request to complete and returns the response body.
+     * @return The response body of the intercepted request
+     */
+    public String waitForResponse() {
         try {
-            boolean completed = latch.await(10, TimeUnit.SECONDS);
+            boolean completed = latch.await(6, TimeUnit.SECONDS);
             if (!completed) {
                 throw new RuntimeException("The specific request did not complete within the timeout period");
             }
-            return interceptedResponse;
+            return getResponseBody();
         } catch (InterruptedException e) {
             throw new RuntimeException("Interrupted while waiting for request to complete", e);
         }
     }
 
-    public String getResponseBody() {
+    private String getResponseBody() {
         Network.GetResponseBodyResponse bodyResponse = devTools.send(Network.getResponseBody(interceptedRequestId));
         return bodyResponse.getBody();
     }

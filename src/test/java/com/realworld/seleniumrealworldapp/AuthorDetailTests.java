@@ -83,8 +83,7 @@ public class AuthorDetailTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/profiles/" + authorName + "/follow", "POST");
         followAuthorButton.clickButton();
-        networkInterceptor.awaitRequestCompletion();
-        boolean isFollowing =  JsonPath.parse(networkInterceptor.getResponseBody()).read("$.profile.following");
+        boolean isFollowing =  JsonPath.parse(networkInterceptor.waitForResponse()).read("$.profile.following");
 
 
         // Assert
