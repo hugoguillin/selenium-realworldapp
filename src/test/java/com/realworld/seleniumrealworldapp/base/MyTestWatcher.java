@@ -13,6 +13,8 @@ import java.util.Optional;
 public class MyTestWatcher implements TestWatcher, BeforeAllCallback {
 
     private WebDriver driver;
+    private static boolean started = false;
+
     @Override
     public void testFailed(ExtensionContext context, Throwable cause) {
         driver = SpringExtension.getApplicationContext(context).getBean(WebDriver.class);
@@ -39,9 +41,11 @@ public class MyTestWatcher implements TestWatcher, BeforeAllCallback {
 
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
-        FileSystemUtils.deleteRecursively(new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path"))));
-        File screenshotsFolder = new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path")));
-        screenshotsFolder.mkdir();
+        if (!started) {
+            FileSystemUtils.deleteRecursively(new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path"))));
+            File screenshotsFolder = new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path")));
+            started = screenshotsFolder.mkdir();
+        }
     }
 }
 
