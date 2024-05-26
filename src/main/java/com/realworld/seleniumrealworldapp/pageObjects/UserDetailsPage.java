@@ -18,4 +18,8 @@ public class UserDetailsPage extends BasePage {
     public WebElement getSettingsButton() {
         return getByTestId("edit-profile-settings");
     }
+
+    public WebElement getMyArticlesTab() {
+        return getElementByText("My Articles");
+    }
 }
