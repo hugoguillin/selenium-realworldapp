@@ -1,8 +1,11 @@
 package com.realworld.seleniumrealworldapp;
 
+import com.jayway.jsonpath.Filter;
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
+import com.realworld.seleniumrealworldapp.infra.NetworkInterceptor;
 import com.realworld.seleniumrealworldapp.pageObjects.TagsPage;
+import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.TagsApi;
@@ -10,8 +13,11 @@ import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
+import static com.jayway.jsonpath.Criteria.where;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -22,12 +28,20 @@ public class TagsTests extends BaseTest {
     private TagsApi tagsApi;
     @Autowired
     private TagsPage tagsPage;
+    @Autowired
+    private ArticlesFeedPage articlesFeedPage;
+    @Autowired
+    private NetworkInterceptor networkInterceptor;
 
     @BeforeAll
     public void setUp() {
         super.setUpSuite();
         for (int i = 0; i < 10; i++) {
-            var newArticle = Utils.generateNewArticleData(true);
+            List<String> tags = Arrays.asList("selenium", "java", "spring", "junit", "test", "automation");
+            Collections.shuffle(tags);
+            int maxTagsPerArticle = 3;
+            var newArticle = Utils.generateNewArticleData(false);
+            newArticle.getArticle().setTagList(tags.subList(0, maxTagsPerArticle));
             articlesApi.createNewArticle(newArticle);
         }
     }
@@ -47,5 +61,25 @@ public class TagsTests extends BaseTest {
 
         // Assert
         assertThat(tagsFrontend).containsExactlyInAnyOrderElementsOf(tagsBackend);
+    }
+
+    @Test
+    @Tag("tags")
+    @DisplayName("Should filter articles by tag")
+    public void filterArticlesByTag() {
+        // Arrange
+        String tag = tagsPage.getRandomTag();
+        Filter filter = Filter.filter(where("tagList").contains(tag));
+        List<String> articlesByTag = JsonPath.parse(articlesApi.getArticles(1000)).read("$.articles[?].title", filter);
+        articlesByTag = articlesByTag.subList(0, Math.min(articlesByTag.size(), 10));
+
+        // Act
+        networkInterceptor.interceptResponse(".*/articles\\?tag=.*", "GET");
+        tagsPage.filterArticlesByTag(tag);
+        networkInterceptor.waitForResponse();
+
+        // Assert
+        assertThat(tagsPage.getTagTab().getText()).contains(tag);
+        assertThat(articlesFeedPage.getArticleTitles()).containsExactlyInAnyOrderElementsOf(articlesByTag);
     }
 }
