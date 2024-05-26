@@ -2,6 +2,7 @@ package com.realworld.seleniumrealworldapp;
 
 import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
+import com.realworld.seleniumrealworldapp.infra.NetworkInterceptor;
 import com.realworld.seleniumrealworldapp.pageObjects.UserDetailsPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
@@ -30,6 +31,8 @@ public class UserDetailsTests extends BaseTest {
     private ArticlesApi articlesApi;
     @Autowired
     private AuthorApi authorApi;
+    @Autowired
+    private NetworkInterceptor networkInterceptor;
 
     @Test
     @Tag("user")
@@ -60,5 +63,23 @@ public class UserDetailsTests extends BaseTest {
         // Assert
         assertThat(userDetailsPage.getMyArticlesTab().getAttribute("class")).contains("active");
         assertThat(displayedArticles).containsExactlyElementsOf(userArticles);
+    }
+
+    @Test
+    @Tag("user")
+    @DisplayName("Should display user favorited articles")
+    public void displayFavoritedArticles() {
+        // Arrange
+        List<String> expectedTitles = userDetailsPage.setUpArticlesFavorited();
+        userDetailsPage.visit();
+
+        // Act
+        networkInterceptor.interceptResponse(".*/articles\\?favorited=.*", "GET");
+        userDetailsPage.goToFavoritedArticles();
+        networkInterceptor.waitForResponse();
+
+        // Assert
+        List<String> displayedFavorites = articlesFeedPage.getArticleTitles();
+        assertThat(displayedFavorites).containsExactlyElementsOf(expectedTitles);
     }
 }

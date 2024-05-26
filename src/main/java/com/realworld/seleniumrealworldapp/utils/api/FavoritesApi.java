@@ -28,18 +28,31 @@ public class FavoritesApi extends ApiBase{
                 asString();
     }
 
+    public void favoriteArticle(String slug) {
+        given().
+                header("Authorization", getToken()).
+                when().
+                post("/articles/" + slug + "/favorite").
+                then().
+                statusCode(200);
+    }
+
     public void unfavoriteArticle(int index) {
         var slug = JsonPath.parse(articlesApi.getArticles(10)).read("$.articles[" + index + "].slug");
         Filter filter = Filter.filter(where("slug").is(slug));
         List<Map<String, Object>> userFavorites = JsonPath.parse(getUserFavorites(username)).read("$.articles[?]", filter);
         if(!userFavorites.isEmpty()) {
-            var finalSlug = JsonPath.parse(userFavorites).read("$[0].slug");
-            given().
-                    header("Authorization", getToken()).
-                    when().
-                    delete("/articles/" + finalSlug + "/favorite").
-                    then().
-                    statusCode(200);
+            String finalSlug = JsonPath.parse(userFavorites).read("$[0].slug");
+            unfavoriteArticle(finalSlug);
         }
+    }
+
+    public void unfavoriteArticle(String slug) {
+        given().
+                header("Authorization", getToken()).
+                when().
+                delete("/articles/" + slug + "/favorite").
+                then().
+                statusCode(200);
     }
 }
