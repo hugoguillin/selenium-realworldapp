@@ -112,7 +112,7 @@ public class ArticleDetailTests extends BaseTest {
     @DisplayName("Should delete an article")
     public void deleteArticle() {
         // Arrange
-        var newArticle = Utils.generateNewArticleData(true);
+        var newArticle = Utils.generateNewArticleData(false);
         String slug = JsonPath.parse(articlesApi.createNewArticle(newArticle)).read("$.article.slug");
         articleDetailPage.goToArticle(slug);
 
