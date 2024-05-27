@@ -28,6 +28,6 @@ public class LogoutTests extends BaseTest {
 
         // Assert
         assertThat(driver.getCurrentUrl()).isEqualTo(baseUrl + "/");
-        assertThat(driver.findElements(userSettingsPage.getUserPicLocator())).isEmpty();
+        userSettingsPage.assertThatUserPicNoLongerExists();
     }
 }

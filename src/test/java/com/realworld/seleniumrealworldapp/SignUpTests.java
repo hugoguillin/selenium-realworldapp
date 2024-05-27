@@ -38,7 +38,7 @@ public class SignUpTests extends BaseTest {
     @DisplayName("Should register valid new user")
     public void registerValidNewUser() {
         // Arrange
-        var newUser = Utils.generateNewUserData();
+        var newUser = Utils.generateNewUserData().getUser();
         signUpPage.visit();
 
         // Act
