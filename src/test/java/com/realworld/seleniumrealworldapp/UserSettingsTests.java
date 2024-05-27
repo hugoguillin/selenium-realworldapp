@@ -9,6 +9,7 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.TopBarPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.UserApi;
 import com.realworld.seleniumrealworldapp.utils.entities.NewUserWrapper;
+import com.realworld.seleniumrealworldapp.utils.entities.UserLogin;
 import com.realworld.seleniumrealworldapp.utils.entities.UserSettings;
 import com.realworld.seleniumrealworldapp.utils.enums.UserSettingsFields;
 import org.junit.jupiter.api.BeforeEach;
@@ -90,4 +91,23 @@ public class UserSettingsTests extends BaseTest {
                 .isEqualTo(fieldsToUpdate.bio());
     }
 
+    @Test
+    @Tag("user")
+    @Tag("sanity")
+    @DisplayName("Should update user email")
+    public void updateEmail() {
+        // Arrange
+        UserLogin user = new UserLogin(fieldsToUpdate.email(), newUser.getUser().password());
+
+        // Act
+        networkInterceptor.interceptResponse(".*/api/user", "PUT");
+        userSettingsPage.updateField(UserSettingsFields.EMAIL, fieldsToUpdate.email());
+        networkInterceptor.waitForResponse();
+        var emailUpdated = JsonPath.parse(userApi.getUser(user)).read("$.user.email");
+
+        // Assert
+        assertThat(emailUpdated).isEqualTo(fieldsToUpdate.email());
+        assertThat(userSettingsPage.getField(UserSettingsFields.EMAIL).getAttribute("value"))
+                .isEqualTo(fieldsToUpdate.email());
+    }
 }
