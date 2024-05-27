@@ -2,6 +2,7 @@ package com.realworld.seleniumrealworldapp;
 
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.pageObjects.UserSettingsPage;
+import com.realworld.seleniumrealworldapp.pageObjects.components.TopBarPage;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -17,17 +18,19 @@ public class LogoutTests extends BaseTest {
     private String baseUrl;
     @Autowired
     private UserSettingsPage userSettingsPage;
+    @Autowired
+    private TopBarPage topBarPage;
 
     @Test
     @Tag("user")
     @DisplayName("Should navigate to home page after logout")
     public void logout() {
-        // Arrange
+        // Arrange - First we go to a page that requires authentication
         userSettingsPage.visit();
-        userSettingsPage.performLogout();
+        topBarPage.performLogout();
 
-        // Assert
+        // Assert - Then we assert that we are redirected to the home page
         assertThat(driver.getCurrentUrl()).isEqualTo(baseUrl + "/");
-        userSettingsPage.assertThatUserPicNoLongerExists();
+        topBarPage.assertThatUserPicNoLongerExists();
     }
 }

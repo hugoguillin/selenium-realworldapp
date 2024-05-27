@@ -53,10 +53,10 @@ public class UserSettingsTests extends BaseTest {
     @DisplayName("Should update user profile picture")
     public void updateProfilePicture() {
         // Act
-        userSettingsPage.updateField(UserSettingsFields.IMAGE.getField(), fieldsToUpdate.image());
+        userSettingsPage.updateField(UserSettingsFields.IMAGE, fieldsToUpdate.image());
 
         // Assert
-        assertThat(userSettingsPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
+        assertThat(topBarPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
     }
 
     @Test
@@ -65,13 +65,29 @@ public class UserSettingsTests extends BaseTest {
     public void updateUsername() {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
-        userSettingsPage.updateField(UserSettingsFields.USERNAME.getField(), fieldsToUpdate.username());
+        userSettingsPage.updateField(UserSettingsFields.USERNAME, fieldsToUpdate.username());
         var response = networkInterceptor.waitForResponse();
         var username = JsonPath.parse(response).read("$.user.username");
 
         // Assert
         assertThat(username).isEqualTo(fieldsToUpdate.username());
         assertThat(topBarPage.getUsername()).isEqualTo(fieldsToUpdate.username());
+    }
+
+    @Test
+    @Tag("user")
+    @DisplayName("Should update user bio")
+    public void updateBio() {
+        // Act
+        networkInterceptor.interceptResponse(".*/api/user", "PUT");
+        userSettingsPage.updateField(UserSettingsFields.BIO, fieldsToUpdate.bio());
+        var response = networkInterceptor.waitForResponse();
+        var bio = JsonPath.parse(response).read("$.user.bio");
+
+        // Assert
+        assertThat(bio).isEqualTo(fieldsToUpdate.bio());
+        assertThat(userSettingsPage.getField(UserSettingsFields.BIO).getAttribute("value"))
+                .isEqualTo(fieldsToUpdate.bio());
     }
 
 }
