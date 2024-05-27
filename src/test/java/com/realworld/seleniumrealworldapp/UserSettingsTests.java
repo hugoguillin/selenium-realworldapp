@@ -1,8 +1,11 @@
 package com.realworld.seleniumrealworldapp;
 
+import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
+import com.realworld.seleniumrealworldapp.infra.NetworkInterceptor;
 import com.realworld.seleniumrealworldapp.pageObjects.UserSettingsPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.LoginPage;
+import com.realworld.seleniumrealworldapp.pageObjects.components.TopBarPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.UserApi;
 import com.realworld.seleniumrealworldapp.utils.entities.NewUserWrapper;
@@ -26,15 +29,20 @@ public class UserSettingsTests extends BaseTest {
     private UserApi userApi;
     @Autowired
     private LoginPage loginPage;
+    @Autowired
+    private TopBarPage topBarPage;
+    @Autowired
+    private NetworkInterceptor networkInterceptor;
+
     private NewUserWrapper newUser;
-    private UserSettings userSettings;
+    private UserSettings fieldsToUpdate;
 
     @BeforeEach
     public void beforeEach() {
         super.setUp();
         ((JavascriptExecutor)driver).executeScript("localStorage.clear()");
         newUser = Utils.generateNewUserData();
-        userSettings = Utils.generateUserSettingsData();
+        fieldsToUpdate = Utils.generateUserSettingsData();
         userApi.registerUser(newUser);
         loginPage.login(newUser.getUser().email(), newUser.getUser().password());
         userSettingsPage.visit();
@@ -45,11 +53,25 @@ public class UserSettingsTests extends BaseTest {
     @DisplayName("Should update user profile picture")
     public void updateProfilePicture() {
         // Act
-        userSettingsPage.updateField(UserSettingsFields.IMAGE.getField(), userSettings.image());
-        userSettingsPage.submitForm();
+        userSettingsPage.updateField(UserSettingsFields.IMAGE.getField(), fieldsToUpdate.image());
 
         // Assert
-        assertThat(userSettingsPage.getUserPic().getAttribute("src")).isEqualTo(userSettings.image());
+        assertThat(userSettingsPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
+    }
+
+    @Test
+    @Tag("user")
+    @DisplayName("Should update username")
+    public void updateUsername() {
+        // Act
+        networkInterceptor.interceptResponse(".*/api/user", "PUT");
+        userSettingsPage.updateField(UserSettingsFields.USERNAME.getField(), fieldsToUpdate.username());
+        var response = networkInterceptor.waitForResponse();
+        var username = JsonPath.parse(response).read("$.user.username");
+
+        // Assert
+        assertThat(username).isEqualTo(fieldsToUpdate.username());
+        assertThat(topBarPage.getUsername()).isEqualTo(fieldsToUpdate.username());
     }
 
 }

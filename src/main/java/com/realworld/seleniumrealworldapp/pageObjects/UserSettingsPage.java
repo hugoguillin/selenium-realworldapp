@@ -31,6 +31,7 @@ public class UserSettingsPage extends BasePage {
         WebElement field = this.getField(fieldName);
         field.clear();
         field.sendKeys(value);
+        this.submitForm();
     }
 
     public void updateAllFields(UserSettings userSettings) {

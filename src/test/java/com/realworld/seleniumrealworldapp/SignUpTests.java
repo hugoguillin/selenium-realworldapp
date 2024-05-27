@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.base.BaseTest;
 import com.realworld.seleniumrealworldapp.infra.NetworkInterceptor;
 import com.realworld.seleniumrealworldapp.pageObjects.SignUpPage;
+import com.realworld.seleniumrealworldapp.pageObjects.components.TopBarPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.entities.NewUser;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +24,8 @@ public class SignUpTests extends BaseTest {
     private String testUserEmail;
     @Autowired
     private SignUpPage signUpPage;
+    @Autowired
+    private TopBarPage topBarPage;
     @Autowired
     private NetworkInterceptor networkInterceptor;
 
@@ -48,7 +51,7 @@ public class SignUpTests extends BaseTest {
 
         // Assert
         assertThat(registeredEmail).isEqualTo(newUser.email());
-        assertThat(signUpPage.getUsernameFromTopBar()).isEqualTo(newUser.username());
+        assertThat(topBarPage.getUsername()).isEqualTo(newUser.username());
     }
 
     @Test

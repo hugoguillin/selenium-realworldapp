@@ -9,7 +9,6 @@ import static io.restassured.RestAssured.given;
 public class UserApi extends ApiBase {
     public void registerUser(NewUserWrapper user) {
         given()
-            .log().all()
             .contentType("application/json")
             .body(user)
             .when()
