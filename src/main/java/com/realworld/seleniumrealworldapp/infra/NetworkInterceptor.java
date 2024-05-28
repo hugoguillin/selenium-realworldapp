@@ -10,6 +10,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -33,14 +34,17 @@ public class NetworkInterceptor {
      * @param requestMethod The method of the request to intercept
      */
     public void interceptResponse(String urlRegex, String requestMethod) {
-        final Request[] req = new Request[1];
-        devTools.addListener(Network.requestWillBeSent(), request -> req[0] = request.getRequest());
+        final ConcurrentHashMap<String, Request> requestMap = new ConcurrentHashMap<>();
+        devTools.addListener(Network.requestWillBeSent(), request -> requestMap.put(request.getRequestId().toString(), request.getRequest()));
         devTools.addListener(Network.responseReceived(), response -> {
             Response res = response.getResponse();
-            if (res.getUrl().matches(urlRegex) && req[0].getMethod().equals(requestMethod)) {
-                this.interceptedRequestId = response.getRequestId();
-                System.out.println("Intercepted response: " + res.getUrl() + " with status " + res.getStatus());
-                markRequestAsCompleted();
+            if (res.getUrl().matches(urlRegex) && requestMap.containsKey(response.getRequestId().toString())) {
+                Request interceptedRequest = requestMap.get(response.getRequestId().toString());
+                if (interceptedRequest.getMethod().equals(requestMethod)) {
+                    this.interceptedRequestId = response.getRequestId();
+                    System.out.println("Intercepted response: " + res.getUrl() + " with status " + res.getStatus());
+                    markRequestAsCompleted();
+                }
             }
         });
     }
