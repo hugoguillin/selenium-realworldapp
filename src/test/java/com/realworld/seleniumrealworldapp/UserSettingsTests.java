@@ -101,13 +101,37 @@ public class UserSettingsTests extends BaseTest {
 
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
-        userSettingsPage.updateField(UserSettingsFields.EMAIL, fieldsToUpdate.email());
+        userSettingsPage.updateField(UserSettingsFields.EMAIL, user.email());
         networkInterceptor.waitForResponse();
         var emailUpdated = JsonPath.parse(userApi.getUser(user)).read("$.user.email");
 
         // Assert
-        assertThat(emailUpdated).isEqualTo(fieldsToUpdate.email());
+        assertThat(emailUpdated).isEqualTo(user.email());
         assertThat(userSettingsPage.getField(UserSettingsFields.EMAIL).getAttribute("value"))
-                .isEqualTo(fieldsToUpdate.email());
+                .isEqualTo(user.email());
+    }
+
+    @Test
+    @Tag("user")
+    @Tag("sanity")
+    @DisplayName("Should update user password")
+    public void updatePassword() {
+        // Arrange
+        UserLogin user = new UserLogin(newUser.getUser().email(), fieldsToUpdate.password());
+
+        // Act
+        networkInterceptor.interceptResponse(".*/api/user", "PUT");
+        userSettingsPage.updateField(UserSettingsFields.PASSWORD, user.password());
+        networkInterceptor.waitForResponse();
+        // An authenticated request (with the new pass) is made to fetch the user info
+        // If it fails, the password was not updated
+        var emailUpdated = JsonPath.parse(userApi.getUser(user)).read("$.user.email");
+
+        // Assert
+        assertThat(emailUpdated).isEqualTo(user.email());
+        // If this assertion works ok in a real application, it would be a security risk
+        assertThat(userSettingsPage.getField(UserSettingsFields.PASSWORD).getAttribute("value"))
+                .isEqualTo(user.password());
+
     }
 }
