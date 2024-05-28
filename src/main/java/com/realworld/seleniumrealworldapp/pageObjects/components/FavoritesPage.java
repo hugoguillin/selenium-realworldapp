@@ -12,6 +12,7 @@ public class FavoritesPage extends BasePage {
 
     public int getAmountOfLikes(int articleIndex) {
         wait.until(driver -> this.getElementsByTestId("fav-button").size() > articleIndex);
+        wait.until(d -> this.getElementsByTestId("fav-button").get(articleIndex).getText().matches(".*\\d+.*"));
         var favButtonText = this.getElementsByTestId("fav-button").get(articleIndex).getText();
         var likes = favButtonText.replaceAll("\\D+", "");
         return Integer.parseInt(likes);

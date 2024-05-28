@@ -38,6 +38,6 @@ public class Utils {
         var email = faker.internet().emailAddress();
         var password = faker.internet().password();
 
-        return new UserSettings(image, username, bio, email, password);
+        return new UserSettings(image, bio, username, email, password);
     }
 }

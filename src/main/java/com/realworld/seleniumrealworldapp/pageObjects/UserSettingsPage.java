@@ -24,15 +24,14 @@ public class UserSettingsPage extends BasePage {
         WebElement field = this.getField(fieldName);
         field.clear();
         field.sendKeys(value);
-        this.submitForm();
     }
 
     public void updateAllFields(UserSettings userSettings) {
+        this.updateField(UserSettingsFields.IMAGE, userSettings.image());
         this.updateField(UserSettingsFields.USERNAME, userSettings.username());
         this.updateField(UserSettingsFields.BIO, userSettings.bio());
         this.updateField(UserSettingsFields.EMAIL, userSettings.email());
         this.updateField(UserSettingsFields.PASSWORD, userSettings.password());
-        this.updateField(UserSettingsFields.IMAGE, userSettings.image());
         this.submitForm();
     }
 

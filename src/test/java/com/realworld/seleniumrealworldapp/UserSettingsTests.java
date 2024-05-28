@@ -55,6 +55,7 @@ public class UserSettingsTests extends BaseTest {
     public void updateProfilePicture() {
         // Act
         userSettingsPage.updateField(UserSettingsFields.IMAGE, fieldsToUpdate.image());
+        userSettingsPage.submitForm();
 
         // Assert
         assertThat(topBarPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
@@ -67,6 +68,7 @@ public class UserSettingsTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
         userSettingsPage.updateField(UserSettingsFields.USERNAME, fieldsToUpdate.username());
+        userSettingsPage.submitForm();
         var response = networkInterceptor.waitForResponse();
         var username = JsonPath.parse(response).read("$.user.username");
 
@@ -82,6 +84,7 @@ public class UserSettingsTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
         userSettingsPage.updateField(UserSettingsFields.BIO, fieldsToUpdate.bio());
+        userSettingsPage.submitForm();
         var response = networkInterceptor.waitForResponse();
         var bio = JsonPath.parse(response).read("$.user.bio");
 
@@ -102,6 +105,7 @@ public class UserSettingsTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
         userSettingsPage.updateField(UserSettingsFields.EMAIL, user.email());
+        userSettingsPage.submitForm();
         networkInterceptor.waitForResponse();
         var emailUpdated = JsonPath.parse(userApi.getUser(user)).read("$.user.email");
 
@@ -122,6 +126,7 @@ public class UserSettingsTests extends BaseTest {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
         userSettingsPage.updateField(UserSettingsFields.PASSWORD, user.password());
+        userSettingsPage.submitForm();
         networkInterceptor.waitForResponse();
         // An authenticated request (with the new pass) is made to fetch the user info
         // If it fails, the password was not updated
@@ -132,6 +137,27 @@ public class UserSettingsTests extends BaseTest {
         // If this assertion works ok in a real application, it would be a security risk
         assertThat(userSettingsPage.getField(UserSettingsFields.PASSWORD).getAttribute("value"))
                 .isEqualTo(user.password());
+
+    }
+
+    @Test
+    @Tag("user")
+    @DisplayName("Should update all fields at once")
+    public void updateAllFields() {
+        // Act
+        networkInterceptor.interceptResponse(".*/api/user", "PUT");
+        userSettingsPage.updateAllFields(fieldsToUpdate);
+        networkInterceptor.waitForResponse();
+
+        // Assert
+        assertThat(topBarPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
+        assertThat(topBarPage.getUsername()).isEqualTo(fieldsToUpdate.username());
+        assertThat(userSettingsPage.getField(UserSettingsFields.BIO).getAttribute("value"))
+                .isEqualTo(fieldsToUpdate.bio());
+        assertThat(userSettingsPage.getField(UserSettingsFields.EMAIL).getAttribute("value"))
+                .isEqualTo(fieldsToUpdate.email());
+        assertThat(userSettingsPage.getField(UserSettingsFields.PASSWORD).getAttribute("value"))
+                .isEqualTo(fieldsToUpdate.password());
 
     }
 }
