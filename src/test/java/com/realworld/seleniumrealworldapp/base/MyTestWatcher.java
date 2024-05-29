@@ -7,7 +7,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.util.FileSystemUtils;
 
 import java.io.File;
-import java.util.Objects;
 import java.util.Optional;
 
 public class MyTestWatcher implements TestWatcher, BeforeAllCallback {
@@ -19,7 +18,7 @@ public class MyTestWatcher implements TestWatcher, BeforeAllCallback {
     public void testFailed(ExtensionContext context, Throwable cause) {
         driver = SpringExtension.getApplicationContext(context).getBean(WebDriver.class);
         ScreenshotUtil screenshotUtil = SpringExtension.getApplicationContext(context).getBean(ScreenshotUtil.class);
-        screenshotUtil.takeScreenshot(System.nanoTime() + context.getDisplayName());
+        screenshotUtil.takeScreenshot();
         driver.quit();
     }
 
@@ -42,9 +41,9 @@ public class MyTestWatcher implements TestWatcher, BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext extensionContext) {
         if (!started) {
-            FileSystemUtils.deleteRecursively(new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path"))));
-            File screenshotsFolder = new File(Objects.requireNonNull(SpringExtension.getApplicationContext(extensionContext).getEnvironment().getProperty("screenshot.path")));
-            started = screenshotsFolder.mkdir();
+            FileSystemUtils.deleteRecursively(new File("allure-results"));
+            FileSystemUtils.deleteRecursively(new File("allure-report"));
+            started = true;
         }
     }
 }
