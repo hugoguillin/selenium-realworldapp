@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,17 +47,12 @@ public class BaseTest {
     public void setUp() {
         var key = "loggedUser";
         var value = getAuthData();
-        setWindowSize();
+        driver.manage().window().maximize();
         driver.get(baseUrl);
         JavascriptExecutor js = (JavascriptExecutor) driver;
         // Set auth data to local storage, so the user is logged in when the page is loaded
         js.executeScript("localStorage.setItem(arguments[0],arguments[1])",key,value);
         driver.navigate().refresh();
-    }
-
-    private void setWindowSize(){
-        Dimension dimension = new Dimension(1920, 1080);
-        driver.manage().window().setSize(dimension);
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.realworld.seleniumrealworldapp.infra;
 
 import org.openqa.selenium.devtools.DevTools;
-import org.openqa.selenium.devtools.v124.network.Network;
-import org.openqa.selenium.devtools.v124.network.model.Request;
-import org.openqa.selenium.devtools.v124.network.model.RequestId;
-import org.openqa.selenium.devtools.v124.network.model.Response;
+import org.openqa.selenium.devtools.v125.network.Network;
+import org.openqa.selenium.devtools.v125.network.model.Request;
+import org.openqa.selenium.devtools.v125.network.model.RequestId;
+import org.openqa.selenium.devtools.v125.network.model.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Scope;

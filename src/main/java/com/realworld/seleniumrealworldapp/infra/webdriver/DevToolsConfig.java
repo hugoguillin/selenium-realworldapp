@@ -3,7 +3,8 @@ package com.realworld.seleniumrealworldapp.infra.webdriver;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.devtools.DevTools;
 import org.openqa.selenium.devtools.HasDevTools;
-import org.openqa.selenium.devtools.v124.network.Network;
+import org.openqa.selenium.devtools.v125.network.Network;
+import org.openqa.selenium.remote.Augmenter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -20,9 +21,11 @@ public class DevToolsConfig {
     @Bean
     @Scope(scopeName = "webDriver")
     public DevTools initDevTools() {
-         DevTools devTools = ((HasDevTools)ctx.getBean(WebDriver.class)).getDevTools();
-         devTools.createSession();
-         devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
-         return devTools;
+        WebDriver driver = ctx.getBean(WebDriver.class);
+        driver = new Augmenter().augment(driver); // Augment the driver to allow for DevTools when using RemoteWebDriver
+        DevTools devTools = ((HasDevTools)driver).getDevTools();
+        devTools.createSession();
+        devTools.send(Network.enable(Optional.empty(), Optional.empty(), Optional.empty()));
+        return devTools;
     }
 }
