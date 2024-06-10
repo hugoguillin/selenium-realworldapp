@@ -25,6 +25,7 @@
 		<jackson.version>2.17.1</jackson.version>
 		<allure.version>2.26.0</allure.version>
 		<aspectj.version>1.9.22</aspectj.version>
+		<testng.version>7.10.2</testng.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -36,11 +37,9 @@
 				<scope>import</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.junit</groupId>
-				<artifactId>junit-bom</artifactId>
-				<version>5.10.2</version>
-				<type>pom</type>
-				<scope>import</scope>
+				<groupId>org.testng</groupId>
+				<artifactId>testng</artifactId>
+				<version>${testng.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -54,6 +53,12 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.junit.vintage</groupId>
+					<artifactId>junit-vintage-engine</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<dependency>
@@ -99,18 +104,29 @@
         </dependency>
 		<dependency>
 			<groupId>io.qameta.allure</groupId>
-			<artifactId>allure-junit5</artifactId>
+			<artifactId>allure-testng</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
 		</dependency>
 	</dependencies>
 
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<version>3.2.5</version>
 				<configuration>
-					<testFailureIgnore>false</testFailureIgnore>
+					<suiteXmlFiles>
+						<suiteXmlFile>testng.xml</suiteXmlFile>
+					</suiteXmlFiles>
 					<argLine>
 						-Dfile.encoding=${project.build.sourceEncoding}
 						-javaagent:"${settings.localRepository}/org/aspectj/aspectjweaver/${aspectj.version}/aspectjweaver-${aspectj.version}.jar"

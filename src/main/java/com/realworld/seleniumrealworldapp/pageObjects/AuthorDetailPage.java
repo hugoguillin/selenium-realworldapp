@@ -29,7 +29,7 @@ public class AuthorDetailPage extends BasePage {
      */
     public String visit(int articleIndex) {
         String authorName = JsonPath.read(articlesApi.getArticles(10), "$.articles["+articleIndex+"].author.username");
-        driver.get(baseUrl + "/profile/" + authorName);
+        getDriver().get(baseUrl + "/profile/" + authorName);
         wait.until(driver -> getElementByText("My Articles").getAttribute("class").contains("active"));
         return authorName;
     }
@@ -38,7 +38,7 @@ public class AuthorDetailPage extends BasePage {
      * Mocks the API response to display the favorited articles
      */
     public void goToFavoritedArticles(Object file) {
-        driver = new Augmenter().augment(driver);
+        driver = new Augmenter().augment(getDriver());
         try (NetworkInterceptor ignored = new NetworkInterceptor(
                 driver, Route.matching(req -> req.getUri().matches(".*articles\\?favorited=.*"))
                 .to(() -> req ->

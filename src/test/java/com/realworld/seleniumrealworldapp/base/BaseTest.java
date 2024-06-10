@@ -2,29 +2,30 @@ package com.realworld.seleniumrealworldapp.base;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.realworld.seleniumrealworldapp.infra.ScreenshotUtil;
 import com.realworld.seleniumrealworldapp.utils.api.ApiBase;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.util.FileSystemUtils;
+import org.testng.ITestContext;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.util.Objects;
 
-@SpringBootTest
-@ExtendWith(MyTestWatcher.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ComponentScan("com.realworld.seleniumrealworldapp")
-public class BaseTest {
+
+public class BaseTest extends SpringContextLoadingTest {
     @Value("${base.url}")
     protected String baseUrl;
     @Value("${api.url}")
@@ -33,26 +34,43 @@ public class BaseTest {
     protected WebDriver driver;
     @Autowired
     private ApiBase apiBase;
+    @Autowired
+    private ScreenshotUtil screenshotUtil;
     private static boolean started = false;
 
-    @BeforeAll
-    public void setUpSuite() {
+    @BeforeClass
+    public void setUpSuite(ITestContext result) {
+        System.out.println(">>>>>>> BEFORE CLASS PARENT <<<<<<<< " + result.getName()+ "() on thread " + Thread.currentThread().getId());
         if (!started) {
             RestAssured.baseURI = apiUrl;
             storeAuthData();
+            FileSystemUtils.deleteRecursively(new File("allure-results"));
+            FileSystemUtils.deleteRecursively(new File("allure-report"));
+            System.out.println("Report folders deleted"+ "   Thread: "+Thread.currentThread().getId());
             started = true;
         }
     }
-    @BeforeEach
-    public void setUp() {
+    @BeforeMethod
+    public void setUp(Method m) {
+        System.out.println(">>>>>>> BEFORE METHOD PARENT <<<<<<<< " + m.getName()+ "() on thread " + Thread.currentThread().getId());
         var key = "loggedUser";
         var value = getAuthData();
-        driver.manage().window().maximize();
-        driver.get(baseUrl);
-        JavascriptExecutor js = (JavascriptExecutor) driver;
+        getDriver().manage().window().maximize();
+        getDriver().get(baseUrl);
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
         // Set auth data to local storage, so the user is logged in when the page is loaded
         js.executeScript("localStorage.setItem(arguments[0],arguments[1])",key,value);
-        driver.navigate().refresh();
+        getDriver().navigate().refresh();
+    }
+
+    @AfterMethod
+    public void tearDown(Method m, ITestResult result) {
+        System.out.println(">>>>>>> AFTER METHOD <<<<<<<< " + result.getMethod().getQualifiedName());
+        if (result.getStatus() == ITestResult.FAILURE){
+            screenshotUtil.takeScreenshot();
+            System.out.println(">>>>>>>>>>>>>> TEST FAILED <<<<<<<<<<<<<<<<");
+            driver.quit();
+        }
     }
 
     /**
@@ -86,5 +104,13 @@ public class BaseTest {
             e.printStackTrace();
         }
         return data;
+    }
+
+    protected WebDriver getDriver() {
+        WebDriver driver = Objects.requireNonNull(applicationContext).getBean(WebDriver.class);
+        if (Objects.isNull(((RemoteWebDriver)driver).getSessionId())) {
+            driver = applicationContext.getBean(WebDriver.class);
+        }
+        return driver;
     }
 }

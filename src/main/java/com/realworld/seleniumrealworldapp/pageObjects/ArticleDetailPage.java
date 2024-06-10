@@ -4,6 +4,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
+import org.openqa.selenium.Alert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -25,15 +26,15 @@ public class ArticleDetailPage extends BasePage{
 
     public void visit(int articleIndex) {
         var slug = JsonPath.parse(articlesApi.getArticles(10)).read("$.articles[" + articleIndex + "].slug");
-        driver.get(baseUrl + "/article/" + slug);
+        getDriver().get(baseUrl + "/article/" + slug);
     }
 
     public void goToArticle(String slug) {
-        driver.get(baseUrl + "/article/" + slug);
+        getDriver().get(baseUrl + "/article/" + slug);
     }
 
     public String getArticleBodyText() {
-        return driver.findElement(By.tagName("p")).getText();
+        return getDriver().findElement(By.tagName("p")).getText();
     }
 
     public void sendComment(String message) {
@@ -79,7 +80,9 @@ public class ArticleDetailPage extends BasePage{
 
     public void deleteArticle() {
         this.getByTestId("delete-article").click();
-        wait.until(ExpectedConditions.alertIsPresent()).accept();
+        // TODO: Fix test to handle alert
+        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        alert.accept();
     }
 
     public void assertAppNavigatesToHomePageAfterArticleDeletion() {
@@ -87,9 +90,9 @@ public class ArticleDetailPage extends BasePage{
     }
 
     public void assertThatNavigatingToDeletedArticleReturns404(String slug) {
-        driver.get(baseUrl + "/article/" + slug);
+        getDriver().get(baseUrl + "/article/" + slug);
         assertThat(getElementByText("404 Not Found").isDisplayed()).isTrue();
-        assertThat(driver.findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
+        assertThat(getDriver().findElement(By.tagName("a")).getAttribute("href")).isEqualTo(baseUrl + "/");
     }
 
     public void assertThatArticleDisplaysExpectedData(NewArticle articleData) {

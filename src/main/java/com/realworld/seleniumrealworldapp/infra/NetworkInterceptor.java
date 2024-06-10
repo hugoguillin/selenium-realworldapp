@@ -55,7 +55,7 @@ public class NetworkInterceptor {
      */
     public String waitForResponse() {
         try {
-            boolean completed = latch.await(6, TimeUnit.SECONDS);
+            boolean completed = latch.await(10, TimeUnit.SECONDS);
             if (!completed) {
                 throw new RuntimeException("The specific request did not complete within the timeout period");
             }

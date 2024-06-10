@@ -11,7 +11,7 @@ public class SignUpPage extends BasePage {
     String baseUrl;
 
     public void visit() {
-        driver.get(baseUrl + "/register");
+        getDriver().get(baseUrl + "/register");
     }
 
     public void registerNewUser(NewUser user) {

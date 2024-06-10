@@ -10,7 +10,7 @@ public class LoginPage extends BasePage {
     private String baseUrl;
 
     public void login(String email, String password) {
-        driver.get(baseUrl + "/login");
+        getDriver().get(baseUrl + "/login");
         getByTestId("email").sendKeys(email);
         getByTestId("password").sendKeys(password);
         getByTestId("login-button").click();

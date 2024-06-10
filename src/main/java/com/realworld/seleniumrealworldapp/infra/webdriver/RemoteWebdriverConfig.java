@@ -16,7 +16,6 @@ public class RemoteWebdriverConfig {
     @Value("${selenium.grid.url}")
     private URL gridUrl;
 
-    @Lazy
     @Bean
     @Scope(scopeName = "browserscope")
     @ConditionalOnProperty(name = "browser", havingValue = "chrome")

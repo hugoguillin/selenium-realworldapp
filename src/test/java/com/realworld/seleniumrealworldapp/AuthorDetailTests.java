@@ -8,17 +8,16 @@ import com.realworld.seleniumrealworldapp.pageObjects.AuthorDetailPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorButton;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
-import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.util.ResourceUtils;
+import org.testng.ITestContext;
+import org.testng.annotations.*;
 
 import java.io.IOException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class AuthorDetailTests extends BaseTest {
     @Autowired
     private AuthorDetailPage authorDetailPage;
@@ -32,15 +31,13 @@ public class AuthorDetailTests extends BaseTest {
     private AuthorApi authorApi;
     private int randomArticleIndex = 0;
 
-    @BeforeAll
-    public void setup() {
+    @BeforeClass
+    public void setUpSuite(ITestContext context) {
+        super.setUpSuite(context);
         randomArticleIndex = (int) (Math.random() * 10);
     }
 
-    @Test
-    @Tag("articles")
-    @Tag("author")
-    @DisplayName("Should display author articles")
+    @Test(groups = {"articles", "author"}, testName = "Should display author articles")
     public void displayAuthorArticles() {
         // Arrange
         var authorName = authorDetailPage.visit(randomArticleIndex);
@@ -51,10 +48,7 @@ public class AuthorDetailTests extends BaseTest {
         assertThat(articlesDisplayed).containsExactlyInAnyOrderElementsOf(authorArticles);
     }
 
-    @Test
-    @Tag("articles")
-    @Tag("author")
-    @DisplayName("Should display favorited articles")
+    @Test(groups = {"articles", "author"}, testName = "Should display favorited articles")
     public void displayFavoritedArticles() throws IOException {
         // Arrange
         authorDetailPage.visit(randomArticleIndex);
@@ -70,11 +64,7 @@ public class AuthorDetailTests extends BaseTest {
         assertThat(articlesDisplayed).containsExactlyInAnyOrderElementsOf(articlesTitles);
     }
 
-    @Test
-    @Tag("articles")
-    @Tag("author")
-    @Tag("sanity")
-    @DisplayName("Should follow author")
+    @Test(groups = {"articles", "author", "sanity"}, testName = "Should follow author")
     public void followAuthor() {
         // Arrange
         authorApi.unfollowAuthor(0);
