@@ -60,7 +60,9 @@ public class ArticleDetailPage extends BasePage{
                 .findFirst()
                 .orElseThrow(() -> new RuntimeException("Comment card not found"));
         commentCard.findElement(By.cssSelector("[data-testid='delete-comment']")).click();
-        wait.until(ExpectedConditions.alertIsPresent()).accept();
+        // apply method is needed in order to provide an updated WebDriver when running tests in parallel
+        Alert alert = wait.until((driver) -> ExpectedConditions.alertIsPresent().apply(getDriver()));
+        alert.accept();
     }
 
     public void assertCommentIsNotVisible(String message) {
@@ -75,18 +77,18 @@ public class ArticleDetailPage extends BasePage{
 
     public void goToEditArticle() {
         this.getByTestId("edit-article").click();
-        wait.until(ExpectedConditions.urlContains("/editor"));
+        wait.until(driver -> ExpectedConditions.urlContains("/editor").apply(getDriver()));
     }
 
     public void deleteArticle() {
         this.getByTestId("delete-article").click();
         // TODO: Fix test to handle alert
-        Alert alert = wait.until(ExpectedConditions.alertIsPresent());
+        Alert alert = wait.until((driver) -> ExpectedConditions.alertIsPresent().apply(getDriver()));
         alert.accept();
     }
 
     public void assertAppNavigatesToHomePageAfterArticleDeletion() {
-        wait.until(ExpectedConditions.urlToBe(baseUrl + "/"));
+        wait.until(driver -> ExpectedConditions.urlToBe(baseUrl + "/").apply(getDriver()));
     }
 
     public void assertThatNavigatingToDeletedArticleReturns404(String slug) {

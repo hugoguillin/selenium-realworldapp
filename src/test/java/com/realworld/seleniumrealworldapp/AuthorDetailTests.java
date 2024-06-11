@@ -10,7 +10,6 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.FollowAuthorBut
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.ResourceUtils;
-import org.testng.ITestContext;
 import org.testng.annotations.*;
 
 import java.io.IOException;
@@ -32,8 +31,8 @@ public class AuthorDetailTests extends BaseTest {
     private int randomArticleIndex = 0;
 
     @BeforeClass
-    public void setUpSuite(ITestContext context) {
-        super.setUpSuite(context);
+    public void setUpSuite() {
+        super.setUpSuite();
         randomArticleIndex = (int) (Math.random() * 10);
     }
 

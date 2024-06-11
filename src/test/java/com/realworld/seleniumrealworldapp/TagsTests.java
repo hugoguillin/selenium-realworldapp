@@ -10,7 +10,6 @@ import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.TagsApi;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -34,8 +33,8 @@ public class TagsTests extends BaseTest {
     private NetworkInterceptor networkInterceptor;
 
     @BeforeClass
-    public void setUpSuite(ITestContext result) {
-        super.setUpSuite(result);
+    public void setUpSuite() {
+        super.setUpSuite();
         for (int i = 0; i < 10; i++) {
             List<String> tags = Arrays.asList("selenium", "java", "spring", "junit", "test", "automation");
             Collections.shuffle(tags);

@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-import java.lang.reflect.Method;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class NewArticleTests extends BaseTest {
@@ -29,8 +27,8 @@ public class NewArticleTests extends BaseTest {
     private ArticleWrapper newArticle;
 
     @BeforeMethod
-    public void setUp(Method m) {
-        super.setUp(m);
+    public void setUp() {
+        super.setUp();
         newArticle = Utils.generateNewArticleData(true);
     }
 

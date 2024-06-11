@@ -39,20 +39,17 @@ public class BaseTest extends SpringContextLoadingTest {
     private static boolean started = false;
 
     @BeforeClass
-    public void setUpSuite(ITestContext result) {
-        System.out.println(">>>>>>> BEFORE CLASS PARENT <<<<<<<< " + result.getName()+ "() on thread " + Thread.currentThread().getId());
+    public void setUpSuite() {
         if (!started) {
             RestAssured.baseURI = apiUrl;
             storeAuthData();
             FileSystemUtils.deleteRecursively(new File("allure-results"));
             FileSystemUtils.deleteRecursively(new File("allure-report"));
-            System.out.println("Report folders deleted"+ "   Thread: "+Thread.currentThread().getId());
             started = true;
         }
     }
     @BeforeMethod
-    public void setUp(Method m) {
-        System.out.println(">>>>>>> BEFORE METHOD PARENT <<<<<<<< " + m.getName()+ "() on thread " + Thread.currentThread().getId());
+    public void setUp() {
         var key = "loggedUser";
         var value = getAuthData();
         getDriver().manage().window().maximize();
@@ -64,13 +61,11 @@ public class BaseTest extends SpringContextLoadingTest {
     }
 
     @AfterMethod
-    public void tearDown(Method m, ITestResult result) {
-        System.out.println(">>>>>>> AFTER METHOD <<<<<<<< " + result.getMethod().getQualifiedName());
+    public void tearDown(ITestResult result) {
         if (result.getStatus() == ITestResult.FAILURE){
             screenshotUtil.takeScreenshot();
-            System.out.println(">>>>>>>>>>>>>> TEST FAILED <<<<<<<<<<<<<<<<");
-            driver.quit();
         }
+        driver.quit();
     }
 
     /**

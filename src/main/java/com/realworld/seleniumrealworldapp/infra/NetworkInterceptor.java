@@ -73,7 +73,4 @@ public class NetworkInterceptor {
     private void markRequestAsCompleted() {
         latch.countDown();
     }
-
-
-
 }

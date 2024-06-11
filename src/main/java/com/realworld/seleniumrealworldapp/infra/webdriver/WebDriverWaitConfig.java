@@ -18,14 +18,14 @@ public class WebDriverWaitConfig {
     @Value("${timeout:7}")
     private int timeout;
     @Autowired
-    private ApplicationContext applicationContext;
+    private ApplicationContext ctx;
 
     @Bean
     @Scope("webDriver")
     public WebDriverWait webDriverWait(){
-        WebDriver driver = Objects.requireNonNull(applicationContext).getBean(WebDriver.class);
+        WebDriver driver = ctx.getBean(WebDriver.class);
         if (Objects.isNull(((RemoteWebDriver)driver).getSessionId())) {
-            driver = applicationContext.getBean(WebDriver.class);
+            driver = ctx.getBean(WebDriver.class);
         }
         return new WebDriverWait(driver, Duration.ofSeconds(timeout));
     }

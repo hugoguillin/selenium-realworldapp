@@ -14,12 +14,9 @@ import com.realworld.seleniumrealworldapp.utils.entities.UserSettings;
 import com.realworld.seleniumrealworldapp.utils.enums.UserSettingsFields;
 import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.testng.ITestContext;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
-
-import java.lang.reflect.Method;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,13 +36,13 @@ public class UserSettingsTests extends BaseTest {
     private UserSettings fieldsToUpdate;
 
     @BeforeClass
-    public void setUpSuite(ITestContext context) {
-        super.setUpSuite(context);
+    public void setUpSuite() {
+        super.setUpSuite();
     }
 
     @BeforeMethod
-    public void setUp(Method m) {
-        super.setUp(m);
+    public void setUp() {
+        super.setUp();
         ((JavascriptExecutor)getDriver()).executeScript("localStorage.clear()");
         newUser = Utils.generateNewUserData();
         fieldsToUpdate = Utils.generateUserSettingsData();

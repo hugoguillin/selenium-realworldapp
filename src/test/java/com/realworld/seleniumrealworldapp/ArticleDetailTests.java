@@ -92,7 +92,7 @@ public class ArticleDetailTests extends BaseTest {
         articleDetailPage.assertCommentIsNotVisible(message);
     }
 
-    @Test(groups = {"sanity", "articles"}, testName = "Should delete an article", enabled = false)
+    @Test(groups = {"sanity", "articles"}, testName = "Should delete an article")
     public void deleteArticle() {
         // Arrange
         var newArticle = Utils.generateNewArticleData(false);
