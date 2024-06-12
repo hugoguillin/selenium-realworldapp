@@ -3,10 +3,10 @@ name: Run Selenium tests
 on:
   push:
     branches:
-      - main
+    - main
   pull_request:
     branches:
-      - main
+    - main
   workflow_dispatch:
     inputs:
       TAGS:
@@ -26,7 +26,7 @@ on:
         default: " "
 
 jobs:
-  cypress-test:
+  selenium-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,6 +52,8 @@ jobs:
         with:
           distribution: zulu
           java-version: 17
+
+      - uses: actions/checkout@v3
 
       - name: Run e2e Selenium tests with Maven
         uses: ./mvnw.cmd test -Dspring.profiles.active=remote
