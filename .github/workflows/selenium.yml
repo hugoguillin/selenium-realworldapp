@@ -1,0 +1,82 @@
+name: Run Selenium tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      TAGS:
+        description: |
+          Tags to filter tests to execute.
+          If no choice is selected, all tests will be executed.
+        required: false
+        type: choice
+        options:
+          - " "
+          - "sanity"
+          - "articles"
+          - "comments"
+          - "author"
+          - "tags"
+          - "user"
+        default: " "
+
+jobs:
+  cypress-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Start application
+        run: docker-compose up -d
+
+      - name: Wait for application to be ready
+        run: |
+          wget -O dockerize.tar.gz https://github.com/jwilder/dockerize/releases/download/v0.7.0/dockerize-alpine-linux-amd64-v0.7.0.tar.gz && tar -C /usr/local/bin -xzvf dockerize.tar.gz && rm dockerize.tar.gz
+          dockerize -wait tcp://localhost:3000 -timeout 1m
+
+      - name: Run seed scripts
+        run: docker-compose exec -T app npm run sqlz -- db:seed:all
+
+      - name: Register test user
+        run: |
+          curl -X POST 'http://localhost:3000/api/users' -H 'Content-Type: application/json' -d '{"user": {"username": "selenium-user","email": "selenium@realworld.com","password": "selenium@realworld.com"}}'
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Run e2e Selenium tests with Maven
+        uses: ./mvnw.cmd test -Dspring.profiles.active=remote
+
+
+      - name: Load test report history
+        uses: actions/checkout@v3
+        if: always()
+        continue-on-error: true
+        with:
+          ref: reports-history
+          path: reports-history
+
+      - name: Build test report
+        uses: simple-elf/allure-report-action@v1.7
+        if: always()
+        with:
+          gh_pages: reports-history
+          allure_history: allure-history
+          allure_results: allure-results
+
+      - name: Publish test report
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: reports-history
+          publish_dir: allure-history
