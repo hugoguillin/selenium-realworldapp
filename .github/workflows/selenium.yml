@@ -1,12 +1,12 @@
 name: Run Selenium tests
 
 on:
-  #push:
-    #branches:
-      #- main
-  #pull_request:
-    #branches:
-      #- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       TAGS:
@@ -53,8 +53,11 @@ jobs:
           distribution: zulu
           java-version: 17
 
+      - name: Make mvnw executable
+        run: chmod +x mvnw
+
       - name: Run e2e Selenium tests with Maven
-        uses: ./mvnw.cmd test -Dspring.profiles.active=remote
+        run: ./mvnw verify -Dspring.profiles.active=remote
 
 
       - name: Load test report history
