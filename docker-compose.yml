@@ -56,7 +56,7 @@ services:
       - SE_EVENT_BUS_HOST=hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
+      - SE_NODE_GRID_URL=http://localhost:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
 
   node2:
     image: selenium/node-chrome:latest
@@ -67,7 +67,7 @@ services:
       - SE_EVENT_BUS_HOST=hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
+      - SE_NODE_GRID_URL=http://localhost:4444
 
   node3:
     image: selenium/node-chrome:latest
@@ -78,7 +78,7 @@ services:
       - SE_EVENT_BUS_HOST=hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
+      - SE_NODE_GRID_URL=http://localhost:4444
 
   node4:
     image: selenium/node-chrome:latest
@@ -89,7 +89,7 @@ services:
       - SE_EVENT_BUS_HOST=hub
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
+      - SE_NODE_GRID_URL=http://localhost:4444
 
   # Edge Nodes
 #  node5:
