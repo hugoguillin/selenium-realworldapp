@@ -4,13 +4,13 @@
         <classes>
             <class name="com.realworld.seleniumrealworldapp.ArticleDetailTests" />
             <class name="com.realworld.seleniumrealworldapp.AuthorDetailTests" />
-<!--            <class name="com.realworld.seleniumrealworldapp.GlobalFeedTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.LogoutTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.NewArticleTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.SignUpTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.TagsTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.UserDetailsTests" />-->
-<!--            <class name="com.realworld.seleniumrealworldapp.UserSettingsTests" />-->
+            <class name="com.realworld.seleniumrealworldapp.GlobalFeedTests" />
+            <class name="com.realworld.seleniumrealworldapp.LogoutTests" />
+            <class name="com.realworld.seleniumrealworldapp.NewArticleTests" />
+            <class name="com.realworld.seleniumrealworldapp.SignUpTests" />
+            <class name="com.realworld.seleniumrealworldapp.TagsTests" />
+            <class name="com.realworld.seleniumrealworldapp.UserDetailsTests" />
+            <class name="com.realworld.seleniumrealworldapp.UserSettingsTests" />
         </classes>
     </test>
 </suite>
