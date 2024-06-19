@@ -54,6 +54,11 @@ jobs:
         working-directory: .docker
         run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci
 
+      - name: Wait for 5 seconds before copying results
+        uses: GuillaumeFalourd/wait-sleep-action@v1
+        with:
+          time: '10s'
+
       - name: Copy Allure results to host
         if: always()
         working-directory: .docker
