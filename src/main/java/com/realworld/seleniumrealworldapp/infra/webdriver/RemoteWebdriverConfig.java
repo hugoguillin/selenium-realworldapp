@@ -11,7 +11,7 @@ import org.springframework.context.annotation.*;
 import java.net.URL;
 
 @Configuration
-@Profile("remote")
+@Profile({"remote", "ci"})
 public class RemoteWebdriverConfig {
     @Value("${selenium.grid.url}")
     private URL gridUrl;
@@ -20,7 +20,9 @@ public class RemoteWebdriverConfig {
     @Scope(scopeName = "browserscope")
     @ConditionalOnProperty(name = "browser", havingValue = "chrome")
     public WebDriver chromeDriver(){
-        return new RemoteWebDriver(gridUrl, new ChromeOptions());
+        ChromeOptions options = new ChromeOptions();
+        options.setAcceptInsecureCerts(true);
+        return new RemoteWebDriver(gridUrl, options);
     }
 
     @Bean

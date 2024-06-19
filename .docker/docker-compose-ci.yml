@@ -1,0 +1,156 @@
+version: "3.9"
+# More info about Selenium Grid configs: https://github.com/SeleniumHQ/docker-selenium/blob/trunk/README.md#docker-images-for-the-selenium-grid-server
+services:
+  postgresql:
+    image: postgres:latest
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: hugogc/realworldapp-for-test-automation:https
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      PORT: 3001
+      JWT_KEY: supersecretkey
+      DEV_DB_USERNAME: postgres
+      DEV_DB_PASSWORD: postgres
+      DEV_DB_NAME: db_dev
+      DEV_DB_HOSTNAME: postgresql
+      DEV_DB_DIALECT: postgres
+
+  tests:
+    build:
+        context: ..
+        dockerfile: .docker/tests.DockerFile
+
+  # Selenium Hub
+  hub:
+    image: selenium/hub:4.21.0-20240522
+    ports:
+      - "4444:4444"
+      - "4443:4443"
+      - "4442:4442"
+    environment:
+      SELENIUM_NODE_OPTIONS: "-role hub"
+
+  # Chrome Nodes
+  node1:
+    build:
+        context: .
+        dockerfile: chromeNodes.Dockerfile
+    ports:
+      - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
+    shm_size: 2gb
+    depends_on:
+      - hub
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_GRID_URL=http://hub:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
+
+  node2:
+    build:
+      context: .
+      dockerfile: chromeNodes.Dockerfile
+    shm_size: 2gb
+    depends_on:
+      - hub
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_GRID_URL=http://hub:4444
+
+  node3:
+    build:
+      context: .
+      dockerfile: chromeNodes.Dockerfile
+    shm_size: 2gb
+    depends_on:
+      - hub
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_GRID_URL=http://hub:4444
+
+  node4:
+    build:
+      context: .
+      dockerfile: chromeNodes.Dockerfile
+    shm_size: 2gb
+    depends_on:
+      - hub
+    environment:
+      - SE_EVENT_BUS_HOST=hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - SE_NODE_GRID_URL=http://hub:4444
+
+  # Edge Nodes
+#  node5:
+#    image: selenium/node-edge:latest
+#    ports:
+#      - "7901:7900" # Go to http://localhost:7901 to see what is running on this node
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://localhost:4444
+#
+#  node6:
+#    image: selenium/node-edge:latest
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://localhost:4444
+#
+#  node7:
+#    image: selenium/node-edge:latest
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://localhost:4444
+#
+#  node8:
+#    image: selenium/node-edge:latest
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://localhost:4444
+
+volumes:
+  postgres-data:
+    driver: local

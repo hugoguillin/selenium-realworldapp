@@ -36,7 +36,7 @@ services:
 
   # Selenium Hub
   hub:
-    image: selenium/hub:latest
+    image: selenium/hub:4.21.0-20240522
     ports:
       - "4444:4444"
       - "4443:4443"
@@ -46,7 +46,7 @@ services:
 
   # Chrome Nodes
   node1:
-    image: selenium/node-chrome:latest
+    image: selenium/node-chrome:4.21.0-20240522
     ports:
       - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
     shm_size: 2gb
@@ -59,7 +59,7 @@ services:
       - SE_NODE_GRID_URL=http://localhost:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
 
   node2:
-    image: selenium/node-chrome:latest
+    image: selenium/node-chrome:4.21.0-20240522
     shm_size: 2gb
     depends_on:
       - hub
@@ -70,7 +70,7 @@ services:
       - SE_NODE_GRID_URL=http://localhost:4444
 
   node3:
-    image: selenium/node-chrome:latest
+    image: selenium/node-chrome:4.21.0-20240522
     shm_size: 2gb
     depends_on:
       - hub
@@ -81,7 +81,7 @@ services:
       - SE_NODE_GRID_URL=http://localhost:4444
 
   node4:
-    image: selenium/node-chrome:latest
+    image: selenium/node-chrome:4.21.0-20240522
     shm_size: 2gb
     depends_on:
       - hub
