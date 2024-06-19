@@ -55,6 +55,7 @@ jobs:
         run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci
 
       - name: Copy Allure results to host
+        if: always()
         working-directory: .docker
         run: |
           container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
