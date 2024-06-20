@@ -29,8 +29,18 @@ jobs:
   selenium-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+
     steps:
       - uses: actions/checkout@v3
+
+#      - name: Cache Docker images.
+#        uses: ScribeMD/docker-cache@0.5.0
+#        with:
+#          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
 
       - name: Start application
         working-directory: .docker
@@ -52,7 +62,7 @@ jobs:
 
       - name: Run e2e Selenium tests
         working-directory: .docker
-        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci
+        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci -DsuiteXmlFile=${{ matrix.shard }}.xml
 
       - name: Wait for 5 seconds before copying results
         uses: GuillaumeFalourd/wait-sleep-action@v1

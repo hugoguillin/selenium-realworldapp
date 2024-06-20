@@ -1,7 +1,7 @@
 FROM maven:3.9.7-eclipse-temurin-17-alpine
 WORKDIR /tests
 COPY ../pom.xml pom.xml
-RUN mvn compile
+RUN mvn dependency:go-offline
 COPY ../ .
 
 # Copy the certificate to the container

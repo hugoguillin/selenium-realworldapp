@@ -38,6 +38,25 @@ services:
     build:
         context: ..
         dockerfile: .docker/tests.DockerFile
+#
+#  node1:
+#    image: selenium/standalone-chrome:latest
+#    ports:
+#      - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
+#      - "4444:4444"
+#    shm_size: 2gb
+#
+#  node2:
+#    image: selenium/standalone-chrome:latest
+#    ports:
+#      - "7901:7900" # Go to http://localhost:7901 to see what is running on this node
+#      - "4445:4444"
+#
+#  node3:
+#    image: selenium/standalone-chrome:latest
+#    ports:
+#      - "7902:7900" # Go to http://localhost:7902 to see what is running on this node
+#      - "4446:4444"
 
   # Selenium Hub
   hub:
@@ -49,7 +68,7 @@ services:
     environment:
       SELENIUM_NODE_OPTIONS: "-role hub"
 
-  # Chrome Nodes
+#  # Chrome Nodes
   node1:
     build:
         context: .
@@ -64,45 +83,45 @@ services:
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - SE_NODE_GRID_URL=http://hub:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
-
-  node2:
-    build:
-      context: .
-      dockerfile: chromeNodes.Dockerfile
-    shm_size: 2gb
-    depends_on:
-      - hub
-    environment:
-      - SE_EVENT_BUS_HOST=hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
-
-  node3:
-    build:
-      context: .
-      dockerfile: chromeNodes.Dockerfile
-    shm_size: 2gb
-    depends_on:
-      - hub
-    environment:
-      - SE_EVENT_BUS_HOST=hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
-
-  node4:
-    build:
-      context: .
-      dockerfile: chromeNodes.Dockerfile
-    shm_size: 2gb
-    depends_on:
-      - hub
-    environment:
-      - SE_EVENT_BUS_HOST=hub
-      - SE_EVENT_BUS_PUBLISH_PORT=4442
-      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-      - SE_NODE_GRID_URL=http://hub:4444
+#
+#  node2:
+#    build:
+#      context: .
+#      dockerfile: chromeNodes.Dockerfile
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://hub:4444
+#
+#  node3:
+#    build:
+#      context: .
+#      dockerfile: chromeNodes.Dockerfile
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://hub:4444
+#
+#  node4:
+#    build:
+#      context: .
+#      dockerfile: chromeNodes.Dockerfile
+#    shm_size: 2gb
+#    depends_on:
+#      - hub
+#    environment:
+#      - SE_EVENT_BUS_HOST=hub
+#      - SE_EVENT_BUS_PUBLISH_PORT=4442
+#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+#      - SE_NODE_GRID_URL=http://hub:4444
 
   # Edge Nodes
 #  node5:
