@@ -32,7 +32,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4]
+        shard: [suite1, suite2, suite3, suite4]
 
     steps:
       - uses: actions/checkout@v3
@@ -68,7 +68,7 @@ jobs:
         uses: GuillaumeFalourd/wait-sleep-action@v1
         if: always()
         with:
-          time: '5s'
+          time: '10s'
 
       - name: Copy Allure results to host
         if: always()
