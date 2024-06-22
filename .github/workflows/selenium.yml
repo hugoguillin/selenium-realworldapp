@@ -52,11 +52,11 @@ jobs:
       - name: Make mvnw.cmd executable
         run: chmod +x mvnw
       - name: Install maven dependencies
-        run: ./mvnw dependency:go-offline
+        run: ./mvnw -B dependency:go-offline --file pom.xml
       - name: Add ssl certificate
         run: |
           sudo apt-get update && sudo apt-get install -y ca-certificates-java && sudo update-ca-certificates
-          sudo keytool -importcert -noprompt -trustcacerts -alias dockerhost -file /usr/local/share/ca-certificates/localhost.crt -keystore /etc/ssl/certs/java/cacerts -storepass changeit
+          sudo keytool -importcert -noprompt -trustcacerts -alias dockerhost -file .docker/localhost.crt -keystore /etc/ssl/certs/java/cacerts -storepass changeit
 
       - name: Start application
         working-directory: .docker
