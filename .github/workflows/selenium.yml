@@ -77,6 +77,12 @@ jobs:
           container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
           docker cp $container_id:/tests/allure-results/. ../allure-results
 
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.shard }}
+          path: allure-results
+
       - name: List files
         run: |
           ls
@@ -88,6 +94,14 @@ jobs:
     needs: selenium-test
     steps:
       - uses: actions/checkout@v3
+
+      - name: Download Allure artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: allure-results
+          pattern: allure-results-*
+          merge-multiple: true
+        continue-on-error: true
 
       - name: List files
         run: |
