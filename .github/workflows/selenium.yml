@@ -50,9 +50,9 @@ jobs:
           cache: maven
 
       - name: Make mvnw.cmd executable
-        run: chmod +x mvnw.cmd
+        run: chmod +x mvnw
       - name: Install maven dependencies
-        run: ./mvnw.cmd dependency:go-offline
+        run: ./mvnw dependency:go-offline
 
 
       - name: Start application
