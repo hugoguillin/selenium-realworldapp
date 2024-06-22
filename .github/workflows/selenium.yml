@@ -49,6 +49,8 @@ jobs:
           java-version: '17'
           cache: maven
 
+      - name: Make mvnw.cmd executable
+        run: chmod +x mvnw.cmd
       - name: Install maven dependencies
         run: ./mvnw.cmd dependency:go-offline
 
