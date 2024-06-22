@@ -34,10 +34,10 @@ services:
       DEV_DB_HOSTNAME: postgresql
       DEV_DB_DIALECT: postgres
 
-  tests:
-    build:
-        context: ..
-        dockerfile: .docker/tests.DockerFile
+#  tests:
+#    build:
+#        context: ..
+#        dockerfile: .docker/tests.DockerFile
 
   # Selenium Hub
   hub:

@@ -53,11 +53,14 @@ jobs:
         run: chmod +x mvnw
       - name: Install maven dependencies
         run: ./mvnw dependency:go-offline
-
+      - name: Add ssl certificate
+        run: |
+          sudo apt-get update && sudo apt-get install -y ca-certificates-java && sudo update-ca-certificates
+          sudo keytool -importcert -noprompt -trustcacerts -alias dockerhost -file /usr/local/share/ca-certificates/localhost.crt -keystore /etc/ssl/certs/java/cacerts -storepass changeit
 
       - name: Start application
         working-directory: .docker
-        run: docker-compose -f docker-compose-local.yml up -d
+        run: docker-compose -f docker-compose-ci.yml up -d
 
       - name: Wait for application to be ready
         run: |
@@ -66,15 +69,15 @@ jobs:
 
       - name: Run seed scripts
         working-directory: .docker
-        run: docker-compose -f docker-compose-local.yml exec -T app npm run sqlz -- db:seed:all
+        run: docker-compose -f docker-compose-ci.yml exec -T app npm run sqlz -- db:seed:all
 
       - name: Register test user
         working-directory: .docker
         run: |
-          docker-compose -f docker-compose-local.yml exec -T node1 sh -c "curl -X POST 'http://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
+          docker-compose -f docker-compose-ci.yml exec -T node1 sh -c "curl -X POST 'https://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
 
       - name: Run e2e Selenium tests
-        run: ./mvnw test -Dspring.profiles.active=remote -DsuiteXmlFile=${{ matrix.shard }}.xml
+        run: ./mvnw test -Dspring.profiles.active=ci -DsuiteXmlFile=${{ matrix.shard }}.xml
 
       - name: Wait for 5 seconds before copying results
         uses: GuillaumeFalourd/wait-sleep-action@v1
