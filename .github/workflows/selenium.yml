@@ -42,9 +42,20 @@ jobs:
 #        with:
 #          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
 
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: maven
+
+      - name: Install maven dependencies
+        run: ./mvnw.cmd dependency:go-offline
+
+
       - name: Start application
         working-directory: .docker
-        run: docker-compose -f docker-compose-ci.yml up -d
+        run: docker-compose -f docker-compose-local.yml up -d
 
       - name: Wait for application to be ready
         run: |
@@ -53,29 +64,28 @@ jobs:
 
       - name: Run seed scripts
         working-directory: .docker
-        run: docker-compose -f docker-compose-ci.yml exec -T app npm run sqlz -- db:seed:all
+        run: docker-compose -f docker-compose-local.yml exec -T app npm run sqlz -- db:seed:all
 
       - name: Register test user
         working-directory: .docker
         run: |
-          docker-compose -f docker-compose-ci.yml exec -T tests sh -c "curl -X POST 'https://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
+          docker-compose -f docker-compose-local.yml exec -T node1 sh -c "curl -X POST 'http://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
 
       - name: Run e2e Selenium tests
-        working-directory: .docker
-        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci -DsuiteXmlFile=${{ matrix.shard }}.xml
+        run: ./mvnw.cmd test -Dspring.profiles.active=remote -DsuiteXmlFile=${{ matrix.shard }}.xml
 
       - name: Wait for 5 seconds before copying results
         uses: GuillaumeFalourd/wait-sleep-action@v1
         if: always()
         with:
-          time: '10s'
+          time: '6s'
 
-      - name: Copy Allure results to host
-        if: always()
-        working-directory: .docker
-        run: |
-          container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
-          docker cp $container_id:/tests/allure-results/. ../allure-results
+#      - name: Copy Allure results to host
+#        if: always()
+#        working-directory: .docker
+#        run: |
+#          container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
+#          docker cp $container_id:/tests/allure-results/. ../allure-results
 
       - name: Upload Artifact
         if: always()
@@ -83,12 +93,6 @@ jobs:
         with:
           name: allure-results-${{ matrix.shard }}
           path: allure-results
-
-      - name: List files
-        if: always()
-        run: |
-          ls
-          cd allure-results && ls
 
   build-report:
     runs-on: ubuntu-latest
@@ -104,11 +108,6 @@ jobs:
           pattern: allure-results-*
           merge-multiple: true
         continue-on-error: true
-
-      - name: List files
-        run: |
-          ls
-          cd allure-results && ls
 
       - name: Load test report history
         uses: actions/checkout@v3
@@ -133,3 +132,54 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: reports-history
           publish_dir: allure-history
+
+#
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      #      - name: Cache Docker images.
+#      #        uses: ScribeMD/docker-cache@0.5.0
+#      #        with:
+#      #          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
+#
+#      - name: Start application
+#        working-directory: .docker
+#        run: docker-compose -f docker-compose-ci.yml up -d
+#
+#      - name: Wait for application to be ready
+#        run: |
+#          wget -O dockerize.tar.gz https://github.com/jwilder/dockerize/releases/download/v0.7.0/dockerize-alpine-linux-amd64-v0.7.0.tar.gz && tar -C /usr/local/bin -xzvf dockerize.tar.gz && rm dockerize.tar.gz
+#          dockerize -wait tcp://localhost:3000 -timeout 1m
+#
+#      - name: Run seed scripts
+#        working-directory: .docker
+#        run: docker-compose -f docker-compose-ci.yml exec -T app npm run sqlz -- db:seed:all
+#
+#      - name: Register test user
+#        working-directory: .docker
+#        run: |
+#          docker-compose -f docker-compose-ci.yml exec -T tests sh -c "curl -X POST 'https://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
+#
+#      - name: Run e2e Selenium tests
+#        working-directory: .docker
+#        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci -DsuiteXmlFile=${{ matrix.shard }}.xml
+#
+#      - name: Wait for 5 seconds before copying results
+#        uses: GuillaumeFalourd/wait-sleep-action@v1
+#        if: always()
+#        with:
+#          time: '6s'
+#
+#      - name: Copy Allure results to host
+#        if: always()
+#        working-directory: .docker
+#        run: |
+#          container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
+#          docker cp $container_id:/tests/allure-results/. ../allure-results
+#
+#      - name: Upload Artifact
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: allure-results-${{ matrix.shard }}
+#          path: allure-results

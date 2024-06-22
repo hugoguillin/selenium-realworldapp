@@ -42,7 +42,7 @@ public class ArticleDetailTests extends BaseTest {
 
         // Assert
         var likesAfter = favoritesPage.getAmountOfLikes(articleIndex);
-        assertThat(likesAfter).isEqualTo(likesBefore + 3);
+        assertThat(likesAfter).isEqualTo(likesBefore + 1);
     }
 
     @Test(groups = {"articles"}, testName = "Should follow an author")
