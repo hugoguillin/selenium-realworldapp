@@ -75,7 +75,13 @@ jobs:
         working-directory: .docker
         run: |
           container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
-          docker cp $container_id:/tests/allure-results ../allure-results
+          docker cp $container_id:/tests/allure-results/. ../allure-results
+
+  build-report:
+    runs-on: ubuntu-latest
+    needs: selenium-test
+    steps:
+      - uses: actions/checkout@v3
 
       - name: Load test report history
         uses: actions/checkout@v3
