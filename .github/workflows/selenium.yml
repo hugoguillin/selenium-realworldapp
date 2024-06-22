@@ -79,6 +79,7 @@ jobs:
 
   build-report:
     runs-on: ubuntu-latest
+    if: always()
     needs: selenium-test
     steps:
       - uses: actions/checkout@v3
