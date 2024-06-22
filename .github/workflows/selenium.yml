@@ -74,7 +74,7 @@ jobs:
           docker-compose -f docker-compose-local.yml exec -T node1 sh -c "curl -X POST 'http://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
 
       - name: Run e2e Selenium tests
-        run: ./mvnw.cmd test -Dspring.profiles.active=remote -DsuiteXmlFile=${{ matrix.shard }}.xml
+        run: ./mvnw test -Dspring.profiles.active=remote -DsuiteXmlFile=${{ matrix.shard }}.xml
 
       - name: Wait for 5 seconds before copying results
         uses: GuillaumeFalourd/wait-sleep-action@v1
