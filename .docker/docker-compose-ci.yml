@@ -40,7 +40,7 @@ services:
         dockerfile: .docker/tests.DockerFile
 
   # Selenium Hub
-  node1:
+  grid:
     image: selenium/standalone-chrome:4.21.0-20240522
     ports:
       - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
