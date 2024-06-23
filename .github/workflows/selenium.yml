@@ -42,7 +42,7 @@ jobs:
         uses: ScribeMD/docker-cache@0.5.0
         with:
 #          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
-          key: docker-${{ runner.os }}-${{ hashFiles('src/test/java/com/realworld/seleniumrealworldapp/**') }}
+          key: docker-${{ runner.os }}-${{ hashFiles('src/test/java/com/realworld/seleniumrealworldapp/**', '**/docker-compose-ci.yml', 'pom.xml') }}
 
       - name: Start application
         working-directory: .docker
