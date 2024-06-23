@@ -34,10 +34,10 @@ services:
       DEV_DB_HOSTNAME: postgresql
       DEV_DB_DIALECT: postgres
 
-#  tests:
-#    build:
-#        context: ..
-#        dockerfile: .docker/tests.DockerFile
+  tests:
+    build:
+        context: ..
+        dockerfile: .docker/tests.DockerFile
 
   # Selenium Hub
   hub:
@@ -51,9 +51,10 @@ services:
 
 #  # Chrome Nodes
   node1:
-    build:
-        context: .
-        dockerfile: chromeNodes.Dockerfile
+    image: selenium/node-chrome:4.21.0-20240522
+#    build:
+#        context: .
+#        dockerfile: chromeNodes.Dockerfile
     ports:
       - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
     shm_size: 2gb
