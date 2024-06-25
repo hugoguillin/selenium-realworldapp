@@ -1,8 +1,8 @@
 FROM maven:3.9.7-eclipse-temurin-17-alpine
 WORKDIR /tests
-COPY ../pom.xml pom.xml
-RUN mvn dependency:go-offline
+COPY ../pom.xml .
 COPY ../ .
+RUN mvn test -Dtest=SeleniumRealworldappApplicationTests # Install only the dependencies needed for the tests
 
 # Copy the certificate to the container
 COPY .docker/localhost.crt /usr/local/share/ca-certificates/localhost.crt

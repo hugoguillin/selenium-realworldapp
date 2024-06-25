@@ -39,40 +39,12 @@ services:
         context: ..
         dockerfile: .docker/tests.DockerFile
 
-  # Selenium Hub
   grid:
     image: selenium/standalone-chrome:4.21.0-20240522
     ports:
       - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
       - "4444:4444"
     shm_size: 2gb
-
-
-#  hub:
-#    image: selenium/hub:4.21.0-20240522
-#    ports:
-#      - "4444:4444"
-#      - "4443:4443"
-#      - "4442:4442"
-#    environment:
-#      SELENIUM_NODE_OPTIONS: "-role hub"
-#
-##  # Chrome Nodes
-#  node1:
-#    image: selenium/node-chrome:4.21.0-20240522
-##    build:
-##        context: .
-##        dockerfile: chromeNodes.Dockerfile
-#    ports:
-#      - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
-#    shm_size: 2gb
-#    depends_on:
-#      - hub
-#    environment:
-#      - SE_EVENT_BUS_HOST=hub
-#      - SE_EVENT_BUS_PUBLISH_PORT=4442
-#      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#      - SE_NODE_GRID_URL=http://hub:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
 
   # Edge Nodes
 #  node2:
@@ -86,7 +58,7 @@ services:
 #      - SE_EVENT_BUS_HOST=hub
 #      - SE_EVENT_BUS_PUBLISH_PORT=4442
 #      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
-#      - SE_NODE_GRID_URL=http://localhost:4444
+#      - SE_NODE_GRID_URL=http://localhost:4444 # See https://github.com/SeleniumHQ/docker-selenium#grid-url-and-session-timeout
 
 volumes:
   postgres-data:
