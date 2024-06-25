@@ -12,17 +12,14 @@ import com.realworld.seleniumrealworldapp.utils.entities.NewUserWrapper;
 import com.realworld.seleniumrealworldapp.utils.entities.UserLogin;
 import com.realworld.seleniumrealworldapp.utils.entities.UserSettings;
 import com.realworld.seleniumrealworldapp.utils.enums.UserSettingsFields;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class UserSettingsTests extends BaseTest {
     @Autowired
     private UserSettingsPage userSettingsPage;
@@ -38,10 +35,15 @@ public class UserSettingsTests extends BaseTest {
     private NewUserWrapper newUser;
     private UserSettings fieldsToUpdate;
 
-    @BeforeEach
-    public void beforeEach() {
+    @BeforeClass
+    public void setUpSuite() {
+        super.setUpSuite();
+    }
+
+    @BeforeMethod
+    public void setUp() {
         super.setUp();
-        ((JavascriptExecutor)driver).executeScript("localStorage.clear()");
+        ((JavascriptExecutor)getDriver()).executeScript("localStorage.clear()");
         newUser = Utils.generateNewUserData();
         fieldsToUpdate = Utils.generateUserSettingsData();
         userApi.registerUser(newUser);
@@ -49,9 +51,7 @@ public class UserSettingsTests extends BaseTest {
         userSettingsPage.visit();
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should update user profile picture")
+    @Test(groups = {"user"}, testName = "Should update user profile picture")
     public void updateProfilePicture() {
         // Act
         userSettingsPage.updateField(UserSettingsFields.IMAGE, fieldsToUpdate.image());
@@ -61,9 +61,7 @@ public class UserSettingsTests extends BaseTest {
         assertThat(topBarPage.getUserPic().getAttribute("src")).isEqualTo(fieldsToUpdate.image());
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should update username")
+    @Test(groups = {"user"}, testName = "Should update username")
     public void updateUsername() {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
@@ -77,9 +75,7 @@ public class UserSettingsTests extends BaseTest {
         assertThat(topBarPage.getUsername()).isEqualTo(fieldsToUpdate.username());
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should update user bio")
+    @Test(groups = {"user"}, testName = "Should update user bio")
     public void updateBio() {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");
@@ -94,10 +90,7 @@ public class UserSettingsTests extends BaseTest {
                 .isEqualTo(fieldsToUpdate.bio());
     }
 
-    @Test
-    @Tag("user")
-    @Tag("sanity")
-    @DisplayName("Should update user email")
+    @Test(groups = {"user", "sanity"}, testName = "Should update user email")
     public void updateEmail() {
         // Arrange
         UserLogin user = new UserLogin(fieldsToUpdate.email(), newUser.getUser().password());
@@ -115,10 +108,7 @@ public class UserSettingsTests extends BaseTest {
                 .isEqualTo(user.email());
     }
 
-    @Test
-    @Tag("user")
-    @Tag("sanity")
-    @DisplayName("Should update user password")
+    @Test(groups = {"user", "sanity"}, testName = "Should update user password")
     public void updatePassword() {
         // Arrange
         UserLogin user = new UserLogin(newUser.getUser().email(), fieldsToUpdate.password());
@@ -140,9 +130,7 @@ public class UserSettingsTests extends BaseTest {
 
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should update all fields at once")
+    @Test(groups = {"user"}, testName = "Should update all fields at once")
     public void updateAllFields() {
         // Act
         networkInterceptor.interceptResponse(".*/api/user", "PUT");

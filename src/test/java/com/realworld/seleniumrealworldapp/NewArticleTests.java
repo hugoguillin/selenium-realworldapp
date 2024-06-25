@@ -8,16 +8,12 @@ import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.entities.ArticleWrapper;
 import com.realworld.seleniumrealworldapp.utils.entities.NewArticle;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class NewArticleTests extends BaseTest {
     @Autowired
     private NewArticlePage newArticlePage;
@@ -30,15 +26,13 @@ public class NewArticleTests extends BaseTest {
 
     private ArticleWrapper newArticle;
 
-    @BeforeEach
+    @BeforeMethod
     public void setUp() {
         super.setUp();
         newArticle = Utils.generateNewArticleData(true);
     }
-    @Test
-    @Tag("sanity")
-    @Tag("articles")
-    @DisplayName("Should create a new article")
+
+    @Test(groups = {"sanity", "articles"}, testName = "Should create a new article")
     public void testCreateNewArticle() {
         // Arrange
         String articleSlug = newArticle.getArticle().getTitle()
@@ -56,10 +50,7 @@ public class NewArticleTests extends BaseTest {
         articleDetailPage.assertThatArticleDisplaysExpectedData(newArticle.getArticle());
     }
 
-    @Test
-    @Tag("sanity")
-    @Tag("articles")
-    @DisplayName("Should update an existing article")
+    @Test(groups = {"sanity", "articles"}, testName = "Should update an existing article")
     public void updateArticle() {
         // Arrange
         NewArticle updatedArticle = Utils.generateNewArticleData(false).getArticle();

@@ -9,9 +9,9 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPag
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.TagsApi;
-import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,7 +20,6 @@ import java.util.List;
 import static com.jayway.jsonpath.Criteria.where;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class TagsTests extends BaseTest {
     @Autowired
     private ArticlesApi articlesApi;
@@ -33,8 +32,8 @@ public class TagsTests extends BaseTest {
     @Autowired
     private NetworkInterceptor networkInterceptor;
 
-    @BeforeAll
-    public void setUp() {
+    @BeforeClass
+    public void setUpSuite() {
         super.setUpSuite();
         for (int i = 0; i < 10; i++) {
             List<String> tags = Arrays.asList("selenium", "java", "spring", "junit", "test", "automation");
@@ -46,14 +45,7 @@ public class TagsTests extends BaseTest {
         }
     }
 
-    @BeforeEach
-    public void setUpTest() {
-        super.setUp();
-    }
-
-    @Test
-    @Tag("tags")
-    @DisplayName("Should display all popular tags")
+    @Test(groups = {"tags"}, testName = "Should display all popular tags")
     public void displayPopularTags() {
         // Arrange
         List<String> tagsBackend = JsonPath.parse(tagsApi.getPopularTags()).read("$.tags[0:50]"); // 50 is the max number of tags displayed
@@ -63,9 +55,7 @@ public class TagsTests extends BaseTest {
         assertThat(tagsFrontend).containsExactlyInAnyOrderElementsOf(tagsBackend);
     }
 
-    @Test
-    @Tag("tags")
-    @DisplayName("Should filter articles by tag")
+    @Test(groups = {"tags"}, testName = "Should filter articles by tag")
     public void filterArticlesByTag() {
         // Arrange
         String tag = tagsPage.getRandomTag();

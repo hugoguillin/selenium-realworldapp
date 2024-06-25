@@ -6,6 +6,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import org.openqa.selenium.devtools.NetworkInterceptor;
+import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.http.Contents;
 import org.openqa.selenium.remote.http.HttpResponse;
 import org.openqa.selenium.remote.http.Route;
@@ -28,7 +29,7 @@ public class AuthorDetailPage extends BasePage {
      */
     public String visit(int articleIndex) {
         String authorName = JsonPath.read(articlesApi.getArticles(10), "$.articles["+articleIndex+"].author.username");
-        driver.get(baseUrl + "/profile/" + authorName);
+        getDriver().get(baseUrl + "/profile/" + authorName);
         wait.until(driver -> getElementByText("My Articles").getAttribute("class").contains("active"));
         return authorName;
     }
@@ -37,6 +38,7 @@ public class AuthorDetailPage extends BasePage {
      * Mocks the API response to display the favorited articles
      */
     public void goToFavoritedArticles(Object file) {
+        driver = new Augmenter().augment(getDriver());
         try (NetworkInterceptor ignored = new NetworkInterceptor(
                 driver, Route.matching(req -> req.getUri().matches(".*articles\\?favorited=.*"))
                 .to(() -> req ->

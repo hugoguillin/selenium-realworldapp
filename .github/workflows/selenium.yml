@@ -1,12 +1,12 @@
 name: Run Selenium tests
 
 on:
-  #push:
-    #branches:
-      #- main
-  #pull_request:
-    #branches:
-      #- main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
     inputs:
       TAGS:
@@ -29,11 +29,24 @@ jobs:
   selenium-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [suite1, suite2, suite3, suite4]
+
+
     steps:
       - uses: actions/checkout@v3
 
+#      - name: Cache Docker images.
+#        uses: ScribeMD/docker-cache@0.5.0
+#        with:
+##          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
+#          key: docker-${{ runner.os }}-${{ hashFiles('src/test/java/com/realworld/seleniumrealworldapp/**', '**/docker-compose-ci.yml', 'pom.xml') }}
+
       - name: Start application
-        run: docker-compose up -d
+        working-directory: .docker
+        run: docker-compose -f docker-compose-ci.yml up -d
 
       - name: Wait for application to be ready
         run: |
@@ -41,21 +54,52 @@ jobs:
           dockerize -wait tcp://localhost:3000 -timeout 1m
 
       - name: Run seed scripts
-        run: docker-compose exec -T app npm run sqlz -- db:seed:all
+        working-directory: .docker
+        run: docker-compose -f docker-compose-ci.yml exec -T app npm run sqlz -- db:seed:all
 
       - name: Register test user
+        working-directory: .docker
         run: |
-          curl -X POST 'http://localhost:3000/api/users' -H 'Content-Type: application/json' -d '{"user": {"username": "selenium-user","email": "selenium@realworld.com","password": "selenium@realworld.com"}}'
+          docker-compose -f docker-compose-ci.yml exec -T tests sh -c "curl -X POST 'https://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
 
-      - name: Set up JDK
-        uses: actions/setup-java@v3
+      - name: Run e2e Selenium tests
+        working-directory: .docker
+        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci -Dsurefire.suiteXmlFiles=testSuites/${{ matrix.shard }}.xml
+
+      - name: Wait for 5 seconds before copying results
+        uses: GuillaumeFalourd/wait-sleep-action@v1
+        if: always()
         with:
-          distribution: zulu
-          java-version: 17
+          time: '5s'
 
-      - name: Run e2e Selenium tests with Maven
-        uses: ./mvnw.cmd test -Dspring.profiles.active=remote
+      - name: Copy Allure results to host
+        if: always()
+        working-directory: .docker
+        run: |
+          container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
+          docker cp $container_id:/tests/allure-results/. ../allure-results
 
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.shard }}
+          path: allure-results
+
+  build-report:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: selenium-test
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Allure artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: allure-results
+          pattern: allure-results-*
+          merge-multiple: true
+        continue-on-error: true
 
       - name: Load test report history
         uses: actions/checkout@v3
@@ -80,3 +124,61 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: reports-history
           publish_dir: allure-history
+
+#    steps:
+#      - uses: actions/checkout@v3
+#
+#      #      - name: Cache Docker images.
+#      #        uses: ScribeMD/docker-cache@0.5.0
+#      #        with:
+#      #          key: docker-${{ runner.os }}-${{ hashFiles('**/docker-compose-ci.yml') }}
+#
+#      - name: Set up Java
+#        uses: actions/setup-java@v4
+#        with:
+#          distribution: 'temurin'
+#          java-version: '17'
+#          cache: maven
+#
+#      - name: Make mvnw.cmd executable
+#        run: chmod +x mvnw
+#      - name: Install maven dependencies
+#        run: ./mvnw -B dependency:go-offline --file pom.xml
+#      - name: Add ssl certificate
+#        run: |
+#          sudo apt-get update && sudo apt-get install -y ca-certificates-java && sudo update-ca-certificates
+#          sudo keytool -importcert -noprompt -trustcacerts -alias dockerhost -file .docker/localhost.crt -keystore /etc/ssl/certs/java/cacerts -storepass changeit
+#
+#      - name: Start application
+#        working-directory: .docker
+#        run: docker-compose -f docker-compose-ci.yml up -d
+#
+#      - name: Wait for application to be ready
+#        run: |
+#          wget -O dockerize.tar.gz https://github.com/jwilder/dockerize/releases/download/v0.7.0/dockerize-alpine-linux-amd64-v0.7.0.tar.gz && tar -C /usr/local/bin -xzvf dockerize.tar.gz && rm dockerize.tar.gz
+#          dockerize -wait tcp://localhost:3000 -timeout 1m
+#
+#      - name: Run seed scripts
+#        working-directory: .docker
+#        run: docker-compose -f docker-compose-ci.yml exec -T app npm run sqlz -- db:seed:all
+#
+#      - name: Register test user
+#        working-directory: .docker
+#        run: |
+#          docker-compose -f docker-compose-ci.yml exec -T node1 sh -c "curl -X POST 'https://app:3000/api/users' -H 'Content-Type: application/json' -d '{\"user\": {\"username\": \"selenium-user\",\"email\": \"selenium@realworld.com\",\"password\": \"selenium@realworld.com\"}}'"
+#
+#      - name: Run e2e Selenium tests
+#        run: ./mvnw test -Dspring.profiles.active=ci -DsuiteXmlFile=${{ matrix.shard }}.xml
+#
+#      - name: Wait for 5 seconds before copying results
+#        uses: GuillaumeFalourd/wait-sleep-action@v1
+#        if: always()
+#        with:
+#          time: '6s'
+#
+#      - name: Upload Artifact
+#        if: always()
+#        uses: actions/upload-artifact@v4
+#        with:
+#          name: allure-results-${{ matrix.shard }}
+#          path: allure-results

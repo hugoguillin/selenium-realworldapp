@@ -1,13 +1,12 @@
 package com.realworld.seleniumrealworldapp;
 
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.Test;
 
 @SpringBootTest
 class SeleniumRealworldappApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void test() {
+        System.out.println("Let's download dependencies!");
+    }
 }

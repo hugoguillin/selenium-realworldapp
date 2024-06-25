@@ -4,10 +4,13 @@ import com.realworld.seleniumrealworldapp.infra.annotations.PageObject;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 
 import java.util.List;
+import java.util.Objects;
 
 @PageObject
 public class BasePage {
@@ -15,6 +18,8 @@ public class BasePage {
     protected WebDriver driver;
     @Autowired
     protected WebDriverWait wait;
+    @Autowired
+    protected ApplicationContext ctx;
 
     public void clickElement(WebElement element){
         wait.until(d -> element.isDisplayed()&& element.isEnabled());
@@ -36,7 +41,7 @@ public class BasePage {
     public WebElement getElementByText(String text) {
         var elementLocator = By.xpath("//*[text()=\"" + text + "\"]");
         return wait.until(d -> {
-            WebElement el = driver.findElement(elementLocator);
+            WebElement el = getDriver().findElement(elementLocator);
             return el.isDisplayed() ? el : null;
         });
     }
@@ -49,7 +54,7 @@ public class BasePage {
     public WebElement getByTestId(String testId) {
         var elementLocator = By.cssSelector("[data-testid='" + testId + "']");
         return wait.until(d -> {
-            WebElement el = driver.findElement(elementLocator);
+            WebElement el = getDriver().findElement(elementLocator);
             return el.isDisplayed() ? el : null;
         });
     }
@@ -61,7 +66,15 @@ public class BasePage {
      */
     public List<WebElement> getElementsByTestId(String testId) {
         var elementLocator = By.cssSelector("[data-testid='" + testId + "']");
-        wait.until(d -> !driver.findElements(elementLocator).isEmpty());
-        return driver.findElements(elementLocator);
+        wait.until(d -> !getDriver().findElements(elementLocator).isEmpty());
+        return getDriver().findElements(elementLocator);
+    }
+
+    public WebDriver getDriver() {
+        WebDriver driver = Objects.requireNonNull(ctx).getBean(WebDriver.class);
+        if (Objects.isNull(((RemoteWebDriver)driver).getSessionId())) {
+            driver = ctx.getBean(WebDriver.class);
+        }
+        return driver;
     }
 }

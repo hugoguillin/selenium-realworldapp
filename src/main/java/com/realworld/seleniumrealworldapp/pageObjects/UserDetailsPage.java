@@ -23,7 +23,7 @@ public class UserDetailsPage extends BasePage {
     private ArticlesApi articlesApi;
 
     public void visit() {
-        driver.get(baseUrl + "/profile/" + username);
+        getDriver().get(baseUrl + "/profile/" + username);
     }
 
     public void goToFavoritedArticles() {

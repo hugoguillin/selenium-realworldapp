@@ -8,18 +8,14 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPag
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class UserDetailsTests extends BaseTest {
     @Value("${user.username}")
     private String username;
@@ -34,9 +30,7 @@ public class UserDetailsTests extends BaseTest {
     @Autowired
     private NetworkInterceptor networkInterceptor;
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should navigate to settings page")
+    @Test(groups = {"user"}, testName = "Should navigate to settings page")
     public void shouldNavigateToSettingsPage() {
         // Arrange
         userDetailsPage.visit();
@@ -46,9 +40,7 @@ public class UserDetailsTests extends BaseTest {
                 .isEqualTo(baseUrl + "/settings");
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should display expected user articles")
+    @Test(groups = {"user"}, testName = "Should display expected user articles")
     public void displayExpectedUserArticles() {
         // Arrange - Let's make sure user has at least 5 articles
         for (int i = 0; i < 5; i++) {
@@ -65,9 +57,7 @@ public class UserDetailsTests extends BaseTest {
         assertThat(displayedArticles).containsExactlyElementsOf(userArticles);
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should display user favorited articles")
+    @Test(groups = {"user"}, testName = "Should display user favorited articles")
     public void displayFavoritedArticles() {
         // Arrange
         List<String> expectedTitles = userDetailsPage.setUpArticlesFavorited();

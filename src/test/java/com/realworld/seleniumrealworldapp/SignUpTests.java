@@ -7,18 +7,13 @@ import com.realworld.seleniumrealworldapp.pageObjects.SignUpPage;
 import com.realworld.seleniumrealworldapp.pageObjects.components.TopBarPage;
 import com.realworld.seleniumrealworldapp.utils.Utils;
 import com.realworld.seleniumrealworldapp.utils.entities.NewUser;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
-import org.openqa.selenium.JavascriptExecutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class SignUpTests extends BaseTest {
     @Value("${user.email}")
     private String testUserEmail;
@@ -29,16 +24,12 @@ public class SignUpTests extends BaseTest {
     @Autowired
     private NetworkInterceptor networkInterceptor;
 
-    @BeforeEach
-    public void setUp() {
-        super.setUp();
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("window.localStorage.clear();");
+    @BeforeClass
+    public void setUpSuite() {
+        System.out.println("Skip main setUpSuite");
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should register valid new user")
+    @Test(groups = {"user"}, testName = "Should register valid new user")
     public void registerValidNewUser() {
         // Arrange
         var newUser = Utils.generateNewUserData().getUser();
@@ -54,9 +45,7 @@ public class SignUpTests extends BaseTest {
         assertThat(topBarPage.getUsername()).isEqualTo(newUser.username());
     }
 
-    @Test
-    @Tag("user")
-    @DisplayName("Should display error message when registering with existing email")
+    @Test(groups = {"user"}, testName = "Should display error message when registering with invalid email")
     public void registerWithExistingEmail() {
         // Arrange
         var newUser = new NewUser("test", testUserEmail, "test1234");

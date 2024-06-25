@@ -10,15 +10,11 @@ import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.AuthorApi;
 import com.realworld.seleniumrealworldapp.utils.api.FavoritesApi;
 import com.realworld.seleniumrealworldapp.utils.Utils;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class ArticleDetailTests extends BaseTest {
     @Autowired
     private FavoritesApi favoritesApi;
@@ -33,10 +29,7 @@ public class ArticleDetailTests extends BaseTest {
     @Autowired
     private ArticlesApi articlesApi;
 
-    @Test
-    @Tag("sanity")
-    @Tag("articles")
-    @DisplayName("Should like an article")
+    @Test(groups = {"sanity", "articles"}, testName = "Should like an article")
     public void likeArticle() {
         // Arrange
         int articleIndex = 0;
@@ -52,9 +45,7 @@ public class ArticleDetailTests extends BaseTest {
         assertThat(likesAfter).isEqualTo(likesBefore + 1);
     }
 
-    @Test
-    @Tag("articles")
-    @DisplayName("Should follow an author")
+    @Test(groups = {"articles"}, testName = "Should follow an author")
     public void followAuthor() {
         // Arrange
         int articleIndex = 0;
@@ -70,10 +61,7 @@ public class ArticleDetailTests extends BaseTest {
         assertThat(followAuthorButton.getButton().getText()).contains("Follow");
     }
 
-    @Test
-    @Tag("sanity")
-    @Tag("comments")
-    @DisplayName("Should add a comment to an article")
+    @Test(groups = {"sanity", "articles"}, testName = "Should add a comment to an article")
     public void addComment() {
         // Arrange
         int articleIndex = 0;
@@ -89,10 +77,7 @@ public class ArticleDetailTests extends BaseTest {
         articleDetailPage.assertCommentHasTestUserUsername(message);
     }
 
-    @Test
-    @Tag("sanity")
-    @Tag("comments")
-    @DisplayName("Should delete a comment from an article")
+    @Test(groups = {"sanity", "comments"}, testName = "Should delete a comment from an article")
     public void deleteComment() {
         // Arrange
         int articleIndex = 0;
@@ -107,9 +92,7 @@ public class ArticleDetailTests extends BaseTest {
         articleDetailPage.assertCommentIsNotVisible(message);
     }
 
-    @Test
-    @Tag("sanity")
-    @DisplayName("Should delete an article")
+    @Test(groups = {"sanity", "articles"}, testName = "Should delete an article")
     public void deleteArticle() {
         // Arrange
         var newArticle = Utils.generateNewArticleData(false);

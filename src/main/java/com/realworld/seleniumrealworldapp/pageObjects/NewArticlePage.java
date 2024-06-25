@@ -12,7 +12,7 @@ public class NewArticlePage extends BasePage {
     private String baseUrl;
 
     public void visit() {
-        driver.get(baseUrl + "/editor");
+        getDriver().get(baseUrl + "/editor");
     }
 
     public void createArticle(NewArticle articleData) {
