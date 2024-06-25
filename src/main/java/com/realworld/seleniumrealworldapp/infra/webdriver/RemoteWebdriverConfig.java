@@ -21,7 +21,7 @@ public class RemoteWebdriverConfig {
     @ConditionalOnProperty(name = "browser", havingValue = "chrome")
     public WebDriver chromeDriver(){
         ChromeOptions options = new ChromeOptions();
-        options.setAcceptInsecureCerts(true);
+//        options.setAcceptInsecureCerts(true);
         return new RemoteWebDriver(gridUrl, options);
     }
 

@@ -29,6 +29,11 @@ jobs:
   selenium-test:
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        testSuite: [ suite1, suite2, suite3, suite4 ]
+
     steps:
       - uses: actions/checkout@v3
 
@@ -52,7 +57,7 @@ jobs:
 
       - name: Run e2e Selenium tests
         working-directory: .docker
-        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci
+        run: docker-compose -f docker-compose-ci.yml exec -T tests mvn test -Dspring.profiles.active=ci -Dsurefire.suiteXmlFiles=testSuites/${{ matrix.testSuite }}.xml
 
       - name: Wait for 5 seconds before copying results
         uses: GuillaumeFalourd/wait-sleep-action@v1
@@ -66,6 +71,28 @@ jobs:
         run: |
           container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
           docker cp $container_id:/tests/allure-results ../allure-results
+
+      - name: Upload Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results-${{ matrix.shard }}
+          path: allure-results
+
+  build-report:
+    runs-on: ubuntu-latest
+    if: always()
+    needs: selenium-test
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Download Allure artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: allure-results
+          pattern: allure-results-*
+          merge-multiple: true
+        continue-on-error: true
 
       - name: Load test report history
         uses: actions/checkout@v3
