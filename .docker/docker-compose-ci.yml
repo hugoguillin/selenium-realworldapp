@@ -1,0 +1,53 @@
+version: "3.9"
+# More info about Selenium Grid configs: https://github.com/SeleniumHQ/docker-selenium/blob/trunk/README.md#docker-images-for-the-selenium-grid-server
+services:
+  postgresql:
+    image: postgres:latest
+    restart: always
+    user: postgres
+    environment:
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
+
+  app:
+    image: hugogc/realworldapp-for-test-automation:https
+    ports:
+      - "3000:3000"
+      - "3001:3001"
+    depends_on:
+      postgresql:
+        condition: service_healthy
+    environment:
+      PORT: 3001
+      JWT_KEY: supersecretkey
+      DEV_DB_USERNAME: postgres
+      DEV_DB_PASSWORD: postgres
+      DEV_DB_NAME: db_dev
+      DEV_DB_HOSTNAME: postgresql
+      DEV_DB_DIALECT: postgres
+
+  tests:
+    build:
+      context: ..
+      dockerfile: .docker/tests.DockerFile
+
+  grid:
+    build:
+      context: .
+      dockerfile: grid.Dockerfile
+    ports:
+      - "7900:7900" # Go to http://localhost:7900 to see what is running on this node
+      - "4444:4444"
+    shm_size: 2gb
+
+volumes:
+  postgres-data:
+    driver: local

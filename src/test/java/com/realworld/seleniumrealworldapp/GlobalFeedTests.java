@@ -7,17 +7,13 @@ import com.realworld.seleniumrealworldapp.pageObjects.components.ArticlesFeedPag
 import com.realworld.seleniumrealworldapp.pageObjects.components.FavoritesPage;
 import com.realworld.seleniumrealworldapp.utils.api.ArticlesApi;
 import com.realworld.seleniumrealworldapp.utils.api.FavoritesApi;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Tag;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.testng.annotations.Test;
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest
 public class GlobalFeedTests extends BaseTest {
     @Autowired
     private GlobalFeedPage globalFeedPage;
@@ -30,9 +26,7 @@ public class GlobalFeedTests extends BaseTest {
     @Autowired
     private FavoritesApi favoritesApi;
 
-    @Test
-    @Tag("articles")
-    @DisplayName("Should display expected articles")
+    @Test(groups = {"articles"}, testName = "Should display expected articles")
     public void displayExpectedArticles() {
         // Arrange
         globalFeedPage.goToGlobalFeed();
@@ -41,9 +35,7 @@ public class GlobalFeedTests extends BaseTest {
         assertThat(displayedArticles).containsExactlyInAnyOrderElementsOf(articlesFromApi);
     }
 
-    @Test
-    @Tag("articles")
-    @DisplayName("Should like an article")
+    @Test(groups = {"articles"}, testName = "Should like an article")
     public void likeAnArticle() {
         // Arrange
         int articleIndex = 0;

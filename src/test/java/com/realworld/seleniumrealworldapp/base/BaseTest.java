@@ -2,30 +2,28 @@ package com.realworld.seleniumrealworldapp.base;
 
 import com.jayway.jsonpath.JsonPath;
 import com.jayway.jsonpath.ReadContext;
+import com.realworld.seleniumrealworldapp.infra.ScreenshotUtil;
 import com.realworld.seleniumrealworldapp.utils.api.ApiBase;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.util.FileSystemUtils;
+import org.testng.ITestResult;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Objects;
 
-@SpringBootTest
-@ExtendWith(MyTestWatcher.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@ComponentScan("com.realworld.seleniumrealworldapp")
-public class BaseTest {
+
+public class BaseTest extends SpringContextLoadingTest {
     @Value("${base.url}")
     protected String baseUrl;
     @Value("${api.url}")
@@ -34,31 +32,38 @@ public class BaseTest {
     protected WebDriver driver;
     @Autowired
     private ApiBase apiBase;
+    @Autowired
+    private ScreenshotUtil screenshotUtil;
     private static boolean started = false;
 
-    @BeforeAll
+    @BeforeClass
     public void setUpSuite() {
         if (!started) {
             RestAssured.baseURI = apiUrl;
             storeAuthData();
+            FileSystemUtils.deleteRecursively(new File("allure-results"));
+            FileSystemUtils.deleteRecursively(new File("allure-report"));
             started = true;
         }
     }
-    @BeforeEach
+    @BeforeMethod
     public void setUp() {
         var key = "loggedUser";
         var value = getAuthData();
-        setWindowSize();
-        driver.get(baseUrl);
-        JavascriptExecutor js = (JavascriptExecutor) driver;
+        getDriver().manage().window().maximize();
+        getDriver().get(baseUrl);
+        JavascriptExecutor js = (JavascriptExecutor) getDriver();
         // Set auth data to local storage, so the user is logged in when the page is loaded
         js.executeScript("localStorage.setItem(arguments[0],arguments[1])",key,value);
-        driver.navigate().refresh();
+        getDriver().navigate().refresh();
     }
 
-    private void setWindowSize(){
-        Dimension dimension = new Dimension(1920, 1080);
-        driver.manage().window().setSize(dimension);
+    @AfterMethod
+    public void tearDown(ITestResult result) {
+        if (result.getStatus() == ITestResult.FAILURE){
+            screenshotUtil.takeScreenshot();
+        }
+        driver.quit();
     }
 
     /**
@@ -92,5 +97,13 @@ public class BaseTest {
             e.printStackTrace();
         }
         return data;
+    }
+
+    protected WebDriver getDriver() {
+        WebDriver driver = Objects.requireNonNull(applicationContext).getBean(WebDriver.class);
+        if (Objects.isNull(((RemoteWebDriver)driver).getSessionId())) {
+            driver = applicationContext.getBean(WebDriver.class);
+        }
+        return driver;
     }
 }

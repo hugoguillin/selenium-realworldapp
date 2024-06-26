@@ -19,7 +19,7 @@ public class TopBarPage extends BasePage {
 
 
     public void assertThatUserPicNoLongerExists() {
-        assertThat(driver.findElements(By.cssSelector("[data-testid='user-pic']"))).isEmpty();
+        assertThat(getDriver().findElements(By.cssSelector("[data-testid='user-pic']"))).isEmpty();
     }
 
     public void performLogout() {

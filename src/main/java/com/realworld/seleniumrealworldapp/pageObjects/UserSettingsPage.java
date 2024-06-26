@@ -12,7 +12,7 @@ public class UserSettingsPage extends BasePage {
     private String baseUrl;
 
     public void visit() {
-        driver.get(baseUrl + "/settings");
+        getDriver().get(baseUrl + "/settings");
         wait.until(d -> getElementByText("Your Settings").isDisplayed());
     }
 

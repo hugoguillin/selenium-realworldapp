@@ -2,16 +2,13 @@ package com.realworld.seleniumrealworldapp.infra.webdriver;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeDriver;
-import org.openqa.selenium.edge.EdgeOptions;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 
 @Configuration
+@Profile({"!remote", "!ci"})
 public class WebDriverConfig {
 
     @Bean
@@ -27,23 +24,5 @@ public class WebDriverConfig {
     @ConditionalOnProperty(name = "browser", havingValue = "edge")
     public WebDriver edgeDriver(){
         return new EdgeDriver();
-    }
-
-    @Bean
-    @Scope(scopeName = "browserscope")
-    @ConditionalOnProperty(name = "browser", havingValue = "chromeHeadless")
-    public WebDriver chromeDriverHeadless(){
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless");
-        return new ChromeDriver(options);
-    }
-
-    @Bean
-    @Scope(scopeName = "browserscope")
-    @ConditionalOnProperty(name = "browser", havingValue = "edgeHeadless")
-    public WebDriver edgeDriverHeadless(){
-        EdgeOptions options = new EdgeOptions();
-        options.addArguments("--headless");
-        return new EdgeDriver(options);
     }
 }

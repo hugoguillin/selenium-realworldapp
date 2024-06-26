@@ -1,0 +1,12 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="Selenium E2E tests" parallel="classes" thread-count="1">
+    <listeners>
+        <listener class-name="com.realworld.seleniumrealworldapp.base.RetryListener" />
+    </listeners>
+    <test name="Selenium E2E tests">
+        <classes>
+            <class name="com.realworld.seleniumrealworldapp.ArticleDetailTests" />
+            <class name="com.realworld.seleniumrealworldapp.AuthorDetailTests" />
+        </classes>
+    </test>
+</suite>
