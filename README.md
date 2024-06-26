@@ -1,5 +1,5 @@
 ## Project description
-The aim of this project is to showcase one way of creating a test automation framework for [a web application](https://github.com/hugoguillin/realworld-app) using Selenium WebDriver.
+The aim of this project is to showcase one way of creating an E2E test automation framework for [a web application](https://github.com/hugoguillin/realworld-app) using Selenium WebDriver.
 
 The tech stack used in this project is:
 - **Java 17**
@@ -8,7 +8,6 @@ The tech stack used in this project is:
 - **RestAssured** for making HTTP requests to the web application's API
 - **TestNG** as the test runner
 - **Maven**
-- **Log4j** for logging
 - **Allure Report** for test reporting
 - **Docker**
 
