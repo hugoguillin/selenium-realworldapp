@@ -69,7 +69,7 @@ jobs:
         if: always()
         working-directory: .docker
         run: |
-          container_id=$(docker-compose -f docker-compose-ci.yml ps -q tests)
+          container_id=$(docker compose -f docker-compose-ci.yml ps -q tests)
           docker cp $container_id:/tests/allure-results ../allure-results
 
       - name: Upload Artifact
